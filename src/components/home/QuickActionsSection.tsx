@@ -38,12 +38,12 @@ export default function QuickActionsSection() {
         {/* left hand side */}
         {/* ================= QR CARD ================= */}
 
-        <div className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm flex justify-between items-top hover:shadow-md transition-all duration-300"
+        <div className="bg-[#EEF2FF] rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm flex justify-between items-top hover:shadow-md transition-all duration-300"
         >
           {/* TEXT */}
           <div className="flex-1 pr-4">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-15 h-15 bg-[#EEF2FF] rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-15 sm:h-15 bg-[#EEF2FF] rounded-xl flex items-center justify-center">
                 <Image
                   src="/icons/QuickActions/qr-icon.png"
                   alt="scan"
@@ -51,18 +51,18 @@ export default function QuickActionsSection() {
                   height={200}
                 />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-text-primary">
+              <h3 className="text-lg sm:text-3xl font-bold text-text-primary">
                 Scan QR to Book
               </h3>
             </div>
 
-            <p className="text-text-primary text-xl sm:text-1xl text-500 mb-5">
+            <p className="text-text-primary text-sm sm:text-lg text-500 mb-5">
               Scan the QR code to book a consultation with our specialists.
             </p>
 
             <Link
               href="/scan-qr"
-              className="inline-flex items-center gap-2 bg-[#1A3FA4] hover:bg-[#0F2872] text-white font-semibold text-sm px-5 py-2.5 rounded-xl"
+              className="inline-flex items-center gap-2 bg-[#1A3FA4] hover:bg-[#0F2872] text-white font-semibold text-xs sm:text-sm px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl"
             >
               Scan QR Now ➔
             </Link>
@@ -70,17 +70,17 @@ export default function QuickActionsSection() {
 
           {/* QR IMAGE */}
 
-          <Image
+          <Image className="w-24 sm:w-40 h-auto"
             src="/icons/QuickActions/Scan-qr.png"
             alt="scan"
-            width={200}
-            height={200}
+            width={120}
+            height={120}
           />
         </div>
 
         {/* right hand side */}
         {/* ================= HEALTH CARD ================= */}
-        <div className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden hover:shadow-md transition-all duration-300"
+        <div className="bg-[#EEF2FF] rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm relative overflow-hidden hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">

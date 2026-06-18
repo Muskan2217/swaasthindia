@@ -40,20 +40,20 @@ export default function PharmacyCategories() {
                        hover:shadow-card hover:-translate-y-1
                        transition-all duration-300 group"
           >
-            {/* ICON */}
-            <div className="w-20 h-20 relative group-hover:scale-110 transition-transform duration-300">
-              <Image
-                src={CategoryIcons[cat.id]}
-                alt={cat.name}
-                fill
-                className="object-contain"
-              />
-            </div>
+         {/* ICON */}
+<div className="w-14 h-14 sm:w-20 sm:h-20 relative group-hover:scale-110 transition-transform duration-300">
+  <Image
+    src={CategoryIcons[cat.id]}
+    alt={cat.name}
+    fill
+    className="object-contain"
+  />
+</div>
 
-            {/* TEXT */}
-            <span className="text-base sm:text-lg font-medium text-text-primary text-center group-hover:text-brand-blue transition-colors">
-              {cat.name}
-            </span>
+{/* TEXT */}
+<span className="text-sm sm:text-lg font-medium text-text-primary text-center group-hover:text-brand-blue transition-colors">
+  {cat.name}
+</span>
           </Link>
         ))}
       </div>

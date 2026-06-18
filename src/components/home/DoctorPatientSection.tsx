@@ -50,7 +50,7 @@ export default function DoctorPatientSection() {
               </h3>
             </div>
 
-            <p className="text-text-primary text-lg leading-relaxed mb-6">
+            <p className="text-text-primary text-base sm:text-lg md:text-xl leading-relaxed mb-6">
               Connect with experienced doctors, get expert medical advice,
               and book appointments from the comfort of your home.
             </p>
