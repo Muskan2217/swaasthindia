@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { HEALTH_MENU_ITEMS } from "@/lib/constants";
-import { motion } from "framer-motion";
+
 
 function QRCodeIllustration() {
   return (
@@ -38,13 +38,7 @@ export default function QuickActionsSection() {
         {/* left hand side */}
         {/* ================= QR CARD ================= */}
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -5 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm flex justify-between items-top hover:shadow-md transition-all duration-300"
+        <div className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm flex justify-between items-top hover:shadow-md transition-all duration-300"
         >
           {/* TEXT */}
           <div className="flex-1 pr-4">
@@ -82,17 +76,11 @@ export default function QuickActionsSection() {
             width={200}
             height={200}
           />
-        </motion.div>
+        </div>
 
         {/* right hand side */}
         {/* ================= HEALTH CARD ================= */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          whileHover={{ scale: 1.02 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden hover:shadow-md transition-all duration-300"
+        <div className="bg-[#EEF2FF] rounded-2xl p-6 border border-gray-100 shadow-sm relative overflow-hidden hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
@@ -157,7 +145,7 @@ export default function QuickActionsSection() {
               />
             </svg>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

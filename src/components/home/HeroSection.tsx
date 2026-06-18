@@ -2,21 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+
 
 export default function HeroSection() {
   return (
     <section className="bg-white rounded-2xl mx-4 sm:mx-6 mt-4 overflow-hidden shadow-sm">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-10 sm:py-14 flex flex-col md:flex-row items-center gap-2">
         {/* Left: Text Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+     
           <div className="flex-1 max-w-lg">
             <div className="relative">
-              <h1 className="text-5xl sm:text-6xl font-extrabold text-text-primary leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-6xl font-extrabold text-text-primary leading-tight tracking-tight">
                 Quality Care is <br />
                 Just a <span className="text-[#E8192C]">Click Away</span>
               </h1>
@@ -69,14 +65,10 @@ export default function HeroSection() {
               </div>
             </div>
           </div>
-        </motion.div>
+      
         {/* Right: Illustration */}
 
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
+      
           <div className="flex-1 flex justify-center">
             <Image
               src="/hero-banner.png"
@@ -87,7 +79,7 @@ export default function HeroSection() {
               // className="w-full max-w-xl h-auto"
             />
           </div>
-        </motion.div>
+      
       </div>
     </section>
   );

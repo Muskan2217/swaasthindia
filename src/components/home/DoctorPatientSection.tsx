@@ -2,16 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 
 export default function DoctorPatientSection() {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="max-w-7xl mx-auto px-4 sm:px-6 mt-6"
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 mt-6"
     >
    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6">
 
@@ -48,12 +42,7 @@ export default function DoctorPatientSection() {
 
 
           {/* RIGHT CONTENT */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="p-6 sm:p-2"
+          <div className="p-6 sm:p-2"
           >
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-2xl sm:text-3xl font-bold text-text-primary">
@@ -86,10 +75,10 @@ export default function DoctorPatientSection() {
                 />
               </svg>
             </Link>
-          </motion.div>
+          </div>
 
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
