@@ -49,7 +49,7 @@ export default function Navbar() {
     </div>
 
     <span className="text-lg font-bold text-text-primary leading-tight">
-      Swasth India
+       Swaasth India
     </span>
   </Link>
 </div>
