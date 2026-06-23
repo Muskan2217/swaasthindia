@@ -36,6 +36,7 @@ export default function DoctorDashboardPage() {
         </div>
           <Footer />
       </main>
+      
     </div>
   );
 }

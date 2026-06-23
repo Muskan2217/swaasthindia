@@ -14,7 +14,7 @@ export default function PatientDashboard() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6">
+       <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {statCardsData.map((card, index) => (
@@ -36,9 +36,11 @@ export default function PatientDashboard() {
         </div>
         <Myreportstable />
         <BookTestCTA />
+
+        <Footer />
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

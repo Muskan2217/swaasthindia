@@ -12,7 +12,7 @@ export default function Navbar() {
     { href: "/doctor-profile", label: "Doctors" },
     { href: "/patient-dashboard", label: "Patient Dashboard" },
     { href: "/doctor-dashboard", label: "Doctor Dashboard" },
-    // { href: "/appointments", label: "Appointments" },
+    { href: "/lab-tests", label: "Lab Tests" },
     { href: "/login", label: "Login / Sign up" },
   ];
 
@@ -91,10 +91,10 @@ export default function Navbar() {
                 />
               </svg>
               <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400"
-              />
+  type="text"
+  placeholder=""
+  className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400 sm:placeholder:text-sm"
+/>
             </div>
 
             {/* Right: Quick Action Buttons (Desktop Only) */}

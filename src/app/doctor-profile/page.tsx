@@ -67,9 +67,10 @@ export default function DoctorProfilePage() {
         {/* 6. Related / Similar Doctors */}
         <RelatedDoctors doctors={RELATED_DOCTORS} />
 
+      <Footer />
       </main>
 
-      <Footer />
+      
     </div>
   );
 }
