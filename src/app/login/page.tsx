@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+// import Footer from "@/components/layout/Footer";
 
 import AuthLayout from "@/components/auth/AuthLayout";
 import LoginForm from "@/components/auth/LoginForm";
@@ -140,7 +140,7 @@ export default function LoginPage() {
         </AuthLayout>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
 
 
