@@ -18,7 +18,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Click Outside Backdrop: Jab menu open hoga tabhi screen pe active hoga */}
+      {/* Click Outside Backdrop */}
       {menuOpen && (
         <div 
           className="fixed inset-0 z-40 bg-transparent" 

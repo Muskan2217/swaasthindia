@@ -155,7 +155,7 @@ export default function Footer() {
                 </svg>
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-text-primary">
-                Swasth <span className="text-[#E8192C]">India</span>
+                Swaasth <span className="text-[#E8192C]">India</span>
               </h3>
             </div>
 
@@ -239,7 +239,7 @@ export default function Footer() {
             <span className="text-[#E8192C] animate-pulse">❤️</span>
           </div>
           <p className="text-[11px] text-white/60 tracking-wide">
-            © {new Date().getFullYear()} Swasth India. All rights reserved.
+            © {new Date().getFullYear()} Swaasth India. All rights reserved.
           </p>
         </div>
       </div>
