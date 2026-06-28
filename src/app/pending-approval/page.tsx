@@ -4,8 +4,9 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import PendingApprovalCard from "@/components/auth/PendingApprovalCard";
 
 export const metadata: Metadata = {
-  title: "Verification Pending – Swasth India",
-  description: "Your doctor profile is under review. We'll notify you once approved.",
+  title: "Verification Pending – Swaasth India",
+  description:
+    "Your doctor profile is under review. We'll notify you once approved.",
 };
 
 export default function PendingApprovalPage() {

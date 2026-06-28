@@ -1,14 +1,15 @@
 // src/app/signup/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import RoleCard from "@/components/auth/RoleCard";
 import { ROLE_OPTIONS } from "@/lib/auth-dummy-data";
 
 export const metadata: Metadata = {
-  title: "Create Account – Swasth India",
-  description: "Choose your account type to get started with Swasth India.",
+  title: "Create Account – Swaasth India",
+  description: "Choose your account type to get started with Swaasth India.",
 };
 
 export default function SignupPage() {
@@ -19,34 +20,23 @@ export default function SignupPage() {
         <div className="text-center max-w-md">
           {/* Brand mark */}
           <div className="flex items-center justify-center gap-2 mb-5">
-            <svg viewBox="0 0 36 36" fill="none" className="w-10 h-10">
-              <path
-                d="M18 31s-13-8.5-13-17A8 8 0 0118 8a8 8 0 0113 6c0 8.5-13 17-13 17z"
-                fill="#E8192C"
-                opacity="0.15"
-              />
-              <path
-                d="M18 29s-11-7.5-11-15A7 7 0 0118 9a7 7 0 0111 5c0 7.5-11 15-11 15z"
-                fill="none"
-                stroke="#E8192C"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M15 17h6M18 14v6"
-                stroke="#3864D5"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+          <Image
+                      src="/site-logo.png"
+                      alt="Swaasth India"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
             <span className="text-2xl font-extrabold text-[#0D1B3E]">
-              Swasth <span className="text-[#E8192C]">India</span>
+              Swaasth <span className="text-[#E8192C]">India</span>
             </span>
           </div>
           <h1 className="text-3xl font-extrabold text-[#0D1B3E] mb-2">
-            Create Your Account
+            Create Your Account 
           </h1>
           <p className="text-gray-500 text-base">
-            Choose how you&apos;ll use Swasth India and we&apos;ll set up the right experience for you.
+            Choose how you&apos;ll use Swaasth India and we&apos;ll set up the
+            right experience for you.
           </p>
         </div>
 

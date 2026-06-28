@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import Navbar from "@/components/layout/Navbar";
-// import Footer from "@/components/layout/Footer";
 
 import AuthLayout from "@/components/auth/AuthLayout";
 import LoginForm from "@/components/auth/LoginForm";
@@ -24,7 +23,7 @@ function LeftPanel() {
             alt="Swaasth India"
             width={48}
             height={48}
-            className="object-contain"
+            className="object-contain rounded-lg"
           />
 
           <div>
@@ -140,7 +139,6 @@ export default function LoginPage() {
         </AuthLayout>
       </main>
 
-      {/* <Footer /> */}
     </div>
 
 

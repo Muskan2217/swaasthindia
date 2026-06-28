@@ -6,8 +6,8 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import DoctorSignupForm from "@/components/auth/DoctorSignupForm";
 
 export const metadata: Metadata = {
-  title: "Doctor Registration – Swasth India",
-  description: "Register as a verified doctor on Swasth India.",
+  title: "Doctor Registration – Swaasth India",
+  description: "Register as a verified doctor on Swaasth India.",
 };
 
 function LeftPanel() {
@@ -26,7 +26,8 @@ function LeftPanel() {
           Doctor Registration
         </h2>
         <p className="text-white/80 text-sm leading-relaxed mb-8">
-          Join our growing network of verified medical professionals and expand your practice.
+          Join our growing network of verified medical professionals and expand
+          your practice.
         </p>
 
         <ul className="space-y-4">
@@ -39,8 +40,19 @@ function LeftPanel() {
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
               <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg width="10" height="10" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 10 10">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 5l2.5 2.5L8 3"/>
+                <svg
+                  width="10"
+                  height="10"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  viewBox="0 0 10 10"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2 5l2.5 2.5L8 3"
+                  />
                 </svg>
               </div>
               <span className="text-sm text-white/85 font-medium">{item}</span>
@@ -56,13 +68,15 @@ function LeftPanel() {
         </p>
         <ol className="space-y-3 relative pl-5 border-l border-white/20">
           {[
-            { step: "Submit your registration",       time: "Immediate"      },
-            { step: "Team reviews your credentials",  time: "1–2 working days" },
-            { step: "Account activated",              time: "After approval" },
+            { step: "Submit your registration", time: "Immediate" },
+            { step: "Team reviews your credentials", time: "1–2 working days" },
+            { step: "Account activated", time: "After approval" },
           ].map((s, i) => (
             <li key={i} className="relative">
               <div className="absolute -left-[23px] w-4 h-4 rounded-full bg-white/30 flex items-center justify-center">
-                <span className="text-[10px] font-bold text-white">{i + 1}</span>
+                <span className="text-[10px] font-bold text-white">
+                  {i + 1}
+                </span>
               </div>
               <p className="text-sm text-white font-semibold">{s.step}</p>
               <p className="text-xs text-white/60">{s.time}</p>

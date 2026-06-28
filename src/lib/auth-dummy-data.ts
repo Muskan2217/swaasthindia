@@ -24,7 +24,7 @@ export const DUMMY_USERS: AuthUser[] = [
   {
     id: "u1",
     name: "Rahul Verma",
-    email: "patient@swasth.in",
+    email: "patient@swaasth.in",
     mobile: "9876543210",
     password: "patient123",
     role: "patient",
@@ -33,7 +33,7 @@ export const DUMMY_USERS: AuthUser[] = [
   {
     id: "u2",
     name: "Dr. XYZ",
-    email: "doctor@swasth.in",
+    email: "doctor@swaasth.in",
     mobile: "9876500000",
     password: "doctor123",
     role: "doctor",
@@ -147,7 +147,8 @@ export const ROLE_OPTIONS: RoleOption[] = [
   {
     id: "patient",
     title: "Patient",
-    description: "Book appointments, manage reports and track your healthcare records.",
+    description:
+      "Book appointments, manage reports and track your healthcare records.",
     href: "/signup/patient",
     features: [
       "Book doctor appointments",
@@ -173,13 +174,13 @@ export const ROLE_OPTIONS: RoleOption[] = [
 // ── Dummy login validator (replace with API call) ─────────────────────────────
 export function validateLogin(
   identifier: string,
-  password: string
+  password: string,
 ): AuthUser | null {
   return (
     DUMMY_USERS.find(
       (u) =>
         (u.email === identifier || u.mobile === identifier) &&
-        u.password === password
+        u.password === password,
     ) ?? null
   );
 }

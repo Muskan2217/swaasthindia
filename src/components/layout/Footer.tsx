@@ -129,7 +129,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Swasth India Info Card */}
+        {/* Swaasth India Info Card */}
         <div className="bg-[#FFF8F4] rounded-2xl p-6 border border-[#FFEADA] shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-5">

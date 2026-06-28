@@ -2,7 +2,15 @@
 "use client";
 import { useState } from "react";
 import type { DateSlot, TimeSlot } from "@/lib/doctor-profile-data";
-import { CalendarDays, Sun, Cloud, Sunset, ShieldCheck, ChevronDown, ArrowRight } from "lucide-react";
+import {
+  CalendarDays,
+  Sun,
+  Cloud,
+  Sunset,
+  ShieldCheck,
+  ChevronDown,
+  ArrowRight,
+} from "lucide-react";
 
 interface Props {
   dateSlots: DateSlot[];
@@ -11,20 +19,32 @@ interface Props {
 }
 
 const PERIOD_CONFIG = {
-  morning:   { label: "Morning Slot",   Icon: Sun,    color: "text-orange-400" },
-  afternoon: { label: "After Noon",     Icon: Cloud,  color: "text-blue-400"   },
-  evening:   { label: "Evening Slot",   Icon: Sunset, color: "text-purple-400" },
+  morning: { label: "Morning Slot", Icon: Sun, color: "text-orange-400" },
+  afternoon: { label: "After Noon", Icon: Cloud, color: "text-blue-400" },
+  evening: { label: "Evening Slot", Icon: Sunset, color: "text-purple-400" },
 } as const;
 
-export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabel }: Props) {
-  const [selectedDate, setSelectedDate] = useState<string>(dateSlots[0]?.id ?? "");
-  const [selectedTime, setSelectedTime] = useState<string>(timeSlots[0]?.id ?? "");
+export default function AppointmentBooking({
+  dateSlots,
+  timeSlots,
+  dateRangeLabel,
+}: Props) {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dateSlots[0]?.id ?? "",
+  );
+  const [selectedTime, setSelectedTime] = useState<string>(
+    timeSlots[0]?.id ?? "",
+  );
   const [booked, setBooked] = useState(false);
 
   const selectedDateSlot = dateSlots.find((d) => d.id === selectedDate);
   const selectedTimeSlot = timeSlots.find((t) => t.id === selectedTime);
 
-  const periods: Array<"morning" | "afternoon" | "evening"> = ["morning", "afternoon", "evening"];
+  const periods: Array<"morning" | "afternoon" | "evening"> = [
+    "morning",
+    "afternoon",
+    "evening",
+  ];
 
   const handleConfirm = () => {
     if (selectedDateSlot && selectedTimeSlot) setBooked(true);
@@ -36,9 +56,13 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
           <ShieldCheck size={32} className="text-green-600" />
         </div>
-        <h3 className="text-lg font-bold text-[#0D1B3E]">Appointment Confirmed!</h3>
+        <h3 className="text-lg font-bold text-[#0D1B3E]">
+          Appointment Confirmed!
+        </h3>
         <p className="text-sm text-gray-600">
-          {selectedDateSlot?.label}, {selectedDateSlot?.date} {selectedDateSlot?.month} ({selectedDateSlot?.day}) at {selectedTimeSlot?.time}
+          {selectedDateSlot?.label}, {selectedDateSlot?.date}{" "}
+          {selectedDateSlot?.month} ({selectedDateSlot?.day}) at{" "}
+          {selectedTimeSlot?.time}
         </p>
         <button
           onClick={() => setBooked(false)}
@@ -55,7 +79,9 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
       {/* ── Section: Select Appointment Slot ─────────────── */}
       <div className="px-5 pt-5 pb-4 border-b border-gray-100">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-[#0D1B3E]">Select Appointment Slot</h2>
+          <h2 className="text-lg font-bold text-[#0D1B3E]">
+            Select Appointment Slot
+          </h2>
           <button className="flex items-center gap-1.5 text-xs font-semibold text-[#1A3FA4] border border-[#1A3FA4]/20 rounded-lg px-3 py-1.5 hover:bg-blue-50 transition-colors">
             <CalendarDays size={13} />
             {dateRangeLabel}
@@ -77,17 +103,27 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
                     : "border-gray-200 bg-white hover:border-[#1A3FA4]/40"
                 }`}
               >
-                <span className={`text-xs font-bold mb-0.5 ${active ? "text-[#1A3FA4]" : "text-gray-500"}`}>
+                <span
+                  className={`text-xs font-bold mb-0.5 ${active ? "text-[#1A3FA4]" : "text-gray-500"}`}
+                >
                   {slot.label}
                 </span>
-                <span className={`text-xl font-bold leading-tight ${active ? "text-[#1A3FA4]" : "text-[#0D1B3E]"}`}>
+                <span
+                  className={`text-xl font-bold leading-tight ${active ? "text-[#1A3FA4]" : "text-[#0D1B3E]"}`}
+                >
                   {slot.date} {slot.month}
                 </span>
                 <span className="text-xs text-gray-400 mt-0.5">{slot.day}</span>
                 {active && (
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#1A3FA4] rounded-full flex items-center justify-center shadow">
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M2 5l2.5 2.5L8 3"
+                        stroke="white"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </div>
                 )}
@@ -99,7 +135,9 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
 
       {/* ── Section: Choose Time Slot ─────────────────────── */}
       <div className="px-5 py-4 border-b border-gray-100">
-        <h2 className="text-base font-bold text-[#0D1B3E] mb-4">Choose Time Slot</h2>
+        <h2 className="text-base font-bold text-[#0D1B3E] mb-4">
+          Choose Time Slot
+        </h2>
 
         {periods.map((period) => {
           const slotsForPeriod = timeSlots.filter((s) => s.period === period);
@@ -128,15 +166,26 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
                         disabled
                           ? "border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50 line-through"
                           : active
-                          ? "border-[#1A3FA4] bg-[#1A3FA4] text-white shadow-md shadow-blue-200"
-                          : "border-gray-200 text-[#0D1B3E] bg-white hover:border-[#1A3FA4]/50 hover:bg-[#EEF2FF]"
+                            ? "border-[#1A3FA4] bg-[#1A3FA4] text-white shadow-md shadow-blue-200"
+                            : "border-gray-200 text-[#0D1B3E] bg-white hover:border-[#1A3FA4]/50 hover:bg-[#EEF2FF]"
                       }`}
                     >
                       {slot.time}
                       {active && (
                         <span className="w-5 h-5 bg-white/30 rounded-full flex items-center justify-center">
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                            <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 10 10"
+                            fill="none"
+                          >
+                            <path
+                              d="M2 5l2.5 2.5L8 3"
+                              stroke="white"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </span>
                       )}
@@ -157,7 +206,9 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
               <CalendarDays size={18} className="text-[#1A3FA4]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Selected Appointment</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Selected Appointment
+              </p>
               <p className="text-sm font-bold text-[#0D1B3E]">
                 {selectedDateSlot
                   ? `${selectedDateSlot.label}, ${selectedDateSlot.date} ${selectedDateSlot.month} (${selectedDateSlot.day})`
@@ -184,8 +235,12 @@ export default function AppointmentBooking({ dateSlots, timeSlots, dateRangeLabe
           <ShieldCheck size={16} className="text-green-600" />
         </div>
         <p className="text-xs text-gray-600 leading-relaxed">
-          Your booking is protected by Swasth India&apos;s Clinical Integrity Guarantee.{" "}
-          <span className="font-bold text-[#0D1B3E]">Free cancellation up to 30 mins</span> before appointment.
+          Your booking is protected by Swaasth India&apos;s Clinical Integrity
+          Guarantee.{" "}
+          <span className="font-bold text-[#0D1B3E]">
+            Free cancellation up to 30 mins
+          </span>{" "}
+          before appointment.
         </p>
       </div>
     </div>

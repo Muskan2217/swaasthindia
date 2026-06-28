@@ -20,9 +20,9 @@ export default function Navbar() {
     <>
       {/* Click Outside Backdrop */}
       {menuOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-transparent" 
-          onClick={() => setMenuOpen(false)} 
+        <div
+          className="fixed inset-0 z-40 bg-transparent"
+          onClick={() => setMenuOpen(false)}
         />
       )}
 
@@ -30,7 +30,6 @@ export default function Navbar() {
         {/* Main Navbar Container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
           <div className="flex items-center justify-between h-16">
-            
             {/* Left: Hamburger Menu Button & Logo */}
             <div className="flex items-center gap-2">
               {/* Hamburger Button */}
@@ -63,7 +62,7 @@ export default function Navbar() {
                 <div className="w-9 h-9 relative flex items-center justify-center">
                   <Image
                     src="/site-logo.png"
-                    alt="Swasth India"
+                    alt="Swaasth India"
                     width={36}
                     height={36}
                     className="object-contain"
@@ -91,10 +90,10 @@ export default function Navbar() {
                 />
               </svg>
               <input
-  type="text"
-  placeholder=""
-  className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400 sm:placeholder:text-sm"
-/>
+                type="text"
+                placeholder=""
+                className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400 sm:placeholder:text-sm"
+              />
             </div>
 
             {/* Right: Quick Action Buttons (Desktop Only) */}

@@ -4,7 +4,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Phone, AlertCircle, ArrowRight, User, Stethoscope } from "lucide-react";
+import {
+  Phone,
+  AlertCircle,
+  ArrowRight,
+  User,
+  Stethoscope,
+} from "lucide-react";
 import {
   LOGIN_FORM_DEFAULTS,
   type LoginFormData,
@@ -42,7 +48,10 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate(form);
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     setLoading(true);
 
@@ -53,7 +62,9 @@ export default function LoginForm() {
     setLoading(false);
 
     if (!user) {
-      setErrors({ general: "Invalid credentials. Try patient@swaasth.in / patient123" });
+      setErrors({
+        general: "Invalid credentials. Try patient@swaasth.in / patient123",
+      });
       return;
     }
     router.push(user.redirectTo);
@@ -62,8 +73,8 @@ export default function LoginForm() {
   const continueAs = (role: UserRole) => {
     // Quick-login with demo credentials
     const creds: Record<UserRole, { id: string; pw: string }> = {
-      patient: { id: "patient@swasth.in", pw: "patient123" },
-      doctor:  { id: "doctor@swasth.in",  pw: "doctor123"  },
+      patient: { id: "patient@swaasth.in", pw: "patient123" },
+      doctor: { id: "doctor@swaasth.in", pw: "doctor123" },
     };
     const user = validateLogin(creds[role].id, creds[role].pw);
     if (user) router.push(user.redirectTo);
@@ -72,14 +83,21 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
       <div>
-        <h1 className="text-2xl font-extrabold text-[#0D1B3E] mb-1">Welcome Back</h1>
-        <p className="text-sm text-gray-500">Sign in to your Swasth India account.</p>
+        <h1 className="text-2xl font-extrabold text-[#0D1B3E] mb-1">
+          Welcome Back
+        </h1>
+        <p className="text-sm text-gray-500">
+          Sign in to your Swaasth India account.
+        </p>
       </div>
 
       {/* General error */}
       {errors.general && (
         <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
-          <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertCircle
+            size={16}
+            className="text-red-500 flex-shrink-0 mt-0.5"
+          />
           <p className="text-sm text-red-600 font-medium">{errors.general}</p>
         </div>
       )}
@@ -112,7 +130,9 @@ export default function LoginForm() {
               onChange={(e) => set("rememberMe")(e.target.checked)}
               className="w-4 h-4 accent-[#3864D5] rounded"
             />
-            <span className="text-sm text-gray-600 font-medium">Remember me</span>
+            <span className="text-sm text-gray-600 font-medium">
+              Remember me
+            </span>
           </label>
           <Link
             href="/forgot-password"
@@ -131,18 +151,33 @@ export default function LoginForm() {
       >
         {loading ? (
           <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            />
           </svg>
         ) : (
-          <>Login <ArrowRight size={15} /></>
+          <>
+            Login <ArrowRight size={15} />
+          </>
         )}
       </button>
 
       {/* Divider */}
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400 font-medium">or continue as</span>
+        <span className="text-xs text-gray-400 font-medium">
+          or continue as
+        </span>
         <div className="flex-1 h-px bg-gray-200" />
       </div>
 
@@ -179,9 +214,15 @@ export default function LoginForm() {
 
       {/* Demo hint */}
       <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3">
-        <p className="text-xs text-[#3864D5] font-semibold mb-0.5">Demo credentials</p>
-        <p className="text-xs text-gray-600">Patient: patient@swasth.in / patient123</p>
-        <p className="text-xs text-gray-600">Doctor: doctor@swasth.in / doctor123</p>
+        <p className="text-xs text-[#3864D5] font-semibold mb-0.5">
+          Demo credentials
+        </p>
+        <p className="text-xs text-gray-600">
+          Patient: patient@swaasth.in / patient123
+        </p>
+        <p className="text-xs text-gray-600">
+          Doctor: doctor@swaasth.in / doctor123
+        </p>
       </div>
     </form>
   );

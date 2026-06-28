@@ -1,12 +1,12 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import AccessVerifiedBanner    from "@/components/doctor-profile/AccessVerifiedBanner";
-import DoctorProfileHeader     from "@/components/doctor-profile/DoctorProfileHeader";
-import AboutDoctor             from "@/components/doctor-profile/AboutDoctor";
-import AppointmentBooking      from "@/components/doctor-profile/AppointmentBooking";
-import ReviewsSection          from "@/components/doctor-profile/ReviewsSection";
-import RelatedDoctors          from "@/components/doctor-profile/RelatedDoctors";
-import BottomInfoRow           from "@/components/doctor-profile/BottomInfoRow";
+import AccessVerifiedBanner from "@/components/doctor-profile/AccessVerifiedBanner";
+import DoctorProfileHeader from "@/components/doctor-profile/DoctorProfileHeader";
+import AboutDoctor from "@/components/doctor-profile/AboutDoctor";
+import AppointmentBooking from "@/components/doctor-profile/AppointmentBooking";
+import ReviewsSection from "@/components/doctor-profile/ReviewsSection";
+import RelatedDoctors from "@/components/doctor-profile/RelatedDoctors";
+import BottomInfoRow from "@/components/doctor-profile/BottomInfoRow";
 
 import {
   DOCTOR_PROFILE,
@@ -19,7 +19,7 @@ import {
 } from "@/lib/doctor-profile-data";
 
 export const metadata = {
-  title: `${DOCTOR_PROFILE.name} – ${DOCTOR_PROFILE.specialty} | Swasth India`,
+  title: `${DOCTOR_PROFILE.name} – ${DOCTOR_PROFILE.specialty} | Swaasth India`,
   description: DOCTOR_PROFILE.about.slice(0, 155),
 };
 
@@ -28,8 +28,7 @@ export default function DoctorProfilePage() {
     <div className="min-h-screen bg-[#F7F8FC]">
       <Navbar />
 
-       <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6">
-
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6">
         {/* 1. QR Access Verified Banner */}
         <AccessVerifiedBanner />
 
@@ -67,10 +66,8 @@ export default function DoctorProfilePage() {
         {/* 6. Related / Similar Doctors */}
         <RelatedDoctors doctors={RELATED_DOCTORS} />
 
-      <Footer />
+        <Footer />
       </main>
-
-      
     </div>
   );
 }
