@@ -13,6 +13,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  address: string;
   mobile: string;
   password: string; // plain text for dummy only — hash in real backend
   role: UserRole;
@@ -21,19 +22,21 @@ export interface AuthUser {
 
 // ── Dummy accounts for login simulation ──────────────────────────────────────
 export const DUMMY_USERS: AuthUser[] = [
-  {
-    id: "u1",
-    name: "Rahul Verma",
-    email: "patient@swaasth.in",
-    mobile: "9876543210",
-    password: "patient123",
-    role: "patient",
-    redirectTo: "/patient-dashboard",
-  },
+ {
+  id: "u1",
+  name: "Rahul Verma",
+  email: "patient@swaasth.in",
+  address: "Delhi",
+  mobile: "9876543210",
+  password: "patient123",
+  role: "patient",
+  redirectTo: "/patient-dashboard",
+},
   {
     id: "u2",
     name: "Dr. XYZ",
     email: "doctor@swaasth.in",
+    address:"kolkata",
     mobile: "9876500000",
     password: "doctor123",
     role: "doctor",
@@ -59,6 +62,7 @@ export interface PatientSignupFormData {
   fullName: string;
   mobile: string;
   email: string;
+  address: string;
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
@@ -68,6 +72,7 @@ export const PATIENT_SIGNUP_DEFAULTS: PatientSignupFormData = {
   fullName: "",
   mobile: "",
   email: "",
+  address: "",
   password: "",
   confirmPassword: "",
   acceptTerms: false,
@@ -78,6 +83,7 @@ export interface DoctorSignupFormData {
   fullName: string;
   mobile: string;
   email: string;
+  address: string;
   password: string;
   confirmPassword: string;
   specialization: string;
@@ -93,6 +99,7 @@ export const DOCTOR_SIGNUP_DEFAULTS: DoctorSignupFormData = {
   fullName: "",
   mobile: "",
   email: "",
+  address: "",
   password: "",
   confirmPassword: "",
   specialization: "",

@@ -1,6 +1,6 @@
 // src/components/auth/LoginForm.tsx
 "use client";
-
+import { login } from "@/lib/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -58,16 +58,27 @@ export default function LoginForm() {
     // Simulate network latency — replace with: await fetch('/api/auth/login', ...)
     await new Promise((r) => setTimeout(r, 800));
 
-    const user = validateLogin(form.identifier, form.password);
-    setLoading(false);
+try {
+  const result = await login({
+    login: form.identifier,
+    password: form.password,
+  });
 
-    if (!user) {
-      setErrors({
-        general: "Invalid credentials. Try patient@swaasth.in / patient123",
-      });
-      return;
-    }
-    router.push(user.redirectTo);
+  localStorage.setItem("token", result.token);
+  localStorage.setItem("user", JSON.stringify(result.user));
+
+ if (result.user.role === "doctor") {
+  router.push("/doctor-dashboard");
+} else {
+  router.push("/patient-dashboard");
+}
+} catch (err: any) {
+  setErrors({
+    general: err.message || "Invalid credentials",
+  });
+} finally {
+  setLoading(false);
+}
   };
 
   const continueAs = (role: UserRole) => {

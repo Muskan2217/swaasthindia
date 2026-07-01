@@ -38,6 +38,7 @@ function validate(data: DoctorSignupFormData): Errors {
     errors.mobile = "Enter a valid 10-digit mobile number.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
     errors.email = "Enter a valid email address.";
+  if (!data.address.trim()) errors.address = "Address is required.";
   if (data.password.length < 6)
     errors.password = "Password must be at least 6 characters.";
   if (data.password !== data.confirmPassword)
@@ -144,6 +145,14 @@ export default function DoctorSignupForm() {
           required
           icon={<Mail size={15} />}
           autoComplete="email"
+        />
+        <InputField
+          label="Address"
+          placeholder="Enter clinic/home address"
+          value={form.address}
+          onChange={set("address")}
+          error={errors.address}
+          required
         />
       </div>
 
