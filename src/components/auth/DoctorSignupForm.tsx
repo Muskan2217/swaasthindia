@@ -1,5 +1,6 @@
 // src/components/auth/DoctorSignupForm.tsx
 "use client";
+import { registerPatient } from "@/lib/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -80,12 +81,29 @@ export default function DoctorSignupForm() {
     setErrors({});
     setLoading(true);
 
-    // Simulate API: await fetch('/api/auth/register/doctor', { method: 'POST', body: formData })
-    await new Promise((r) => setTimeout(r, 1000));
+// Register doctor account and redirect to the pending approval page.
+// Doctor accounts require admin verification before they can log in.
 
-    setLoading(false);
-    router.push("/pending-approval");
-  };
+try {
+  await registerPatient({
+    name: form.fullName,
+    email: form.email,
+    mobile: form.mobile,
+    address: form.address,
+    password: form.password,
+    password_confirmation: form.confirmPassword,
+    role: "doctor",
+  });
+
+  router.push("/pending-approval");
+} catch (err: any) {
+  setErrors({
+    general: err.message || "Registration failed",
+  });
+} finally {
+  setLoading(false);
+}
+}; 
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
