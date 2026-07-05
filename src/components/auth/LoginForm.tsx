@@ -1,6 +1,7 @@
 // src/components/auth/LoginForm.tsx
 "use client";
 import { login } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -38,6 +39,7 @@ function validate(data: LoginFormData): LoginFormErrors {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login: saveLogin } = useAuth();
   const [form, setForm] = useState<LoginFormData>(LOGIN_FORM_DEFAULTS);
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [loading, setLoading] = useState(false);
@@ -55,8 +57,6 @@ export default function LoginForm() {
     setErrors({});
     setLoading(true);
 
-    // Simulate network latency — replace with: await fetch('/api/auth/login', ...)
-    await new Promise((r) => setTimeout(r, 800));
 
 try {
   const result = await login({
@@ -64,10 +64,11 @@ try {
     password: form.password,
   });
 
-  localStorage.setItem("token", result.token);
-  localStorage.setItem("user", JSON.stringify(result.user));
+// Save authenticated user in global auth context
+saveLogin(result.token, result.user);
 
- if (result.user.role === "doctor") {
+// Redirect user based on role
+if (result.user.role === "doctor") {
   router.push("/doctor-dashboard");
 } else {
   router.push("/patient-dashboard");

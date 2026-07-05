@@ -1,3 +1,8 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StatsSection from "@/components/doctor-dashboard/StatsSection";
@@ -9,6 +14,19 @@ import UpcomingAppointmentsTable from "@/components/doctor-dashboard/UpcomingApp
 import RecentPatientsTable from "@/components/doctor-dashboard/RecentPatientsTable";
 
 export default function DoctorDashboardPage() {
+  const router = useRouter();
+const { user } = useAuth();
+
+useEffect(() => {
+  if (!user) {
+    router.replace("/login");
+    return;
+  }
+
+  if (user.role !== "doctor") {
+    router.replace("/patient-dashboard");
+  }
+}, [user, router]);
   return (
      <div className="min-h-screen bg-[#F7F8FC]">
           <Navbar />

@@ -18,7 +18,10 @@ export async function registerPatient(data: any) {
 
   return result;
 }
-
+/**
+ * Sends a POST request to authenticate the user.
+ * Throws the parsed API error response if the request fails.
+ */
 export async function login(data: any) {
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
@@ -36,4 +39,17 @@ export async function login(data: any) {
   }
 
   return result;
+}
+
+// Logout current user and invalidate the API token
+export async function logout(token: string) {
+  const response = await fetch(`${API_URL}/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+
+  return response.json();
 }

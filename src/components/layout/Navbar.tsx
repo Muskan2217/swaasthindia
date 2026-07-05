@@ -1,24 +1,108 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { logout as logoutApi } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const menuItems = [
-    { href: "/", label: "Home" },
-    { href: "/doctor-profile", label: "Doctors" },
-    { href: "/patient-dashboard", label: "Patient Dashboard" },
-    { href: "/doctor-dashboard", label: "Doctor Dashboard" },
-    { href: "/lab-tests", label: "Lab Tests" },
-    { href: "/login", label: "Login / Sign up" },
-  ];
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Logout user from backend and clear local session
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await logoutApi(token);
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      logout();
+      setDropdownOpen(false);
+      setMenuOpen(false);
+      router.push("/login");
+    }
+  };
+
+  // Desktop nav links — role-based
+  const desktopNavItems = user
+    ? user.role === "doctor"
+      ? [
+          { href: "/", label: "Home" },
+          { href: "/appointments", label: "Appointments" },
+        ]
+      : [
+          { href: "/", label: "Home" },
+          { href: "/doctor-profile", label: "Doctors" },
+          { href: "/lab-tests", label: "Lab Tests" },
+          { href: "/appointments", label: "Appointments" },
+        ]
+    : [
+        { href: "/", label: "Home" },
+        { href: "/doctor-profile", label: "Doctors" },
+        { href: "/lab-tests", label: "Lab Tests" },
+      ];
+
+  // Profile dropdown items — dashboard href differs by role
+  const dropdownItems = user
+    ? [
+        {
+          href:
+            user.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard",
+          label: "Dashboard",
+        },
+        { href: "/profile", label: "My Profile" },
+      ]
+    : [];
+
+  // Mobile hamburger links — role-based
+  const mobileMenuItems = user
+    ? user.role === "doctor"
+      ? [
+          { href: "/", label: "Home" },
+          { href: "/appointments", label: "Appointments" },
+          { href: "/doctor-dashboard", label: "Dashboard" },
+          { href: "/doctor-profile", label: "My Profile" },
+        ]
+      : [
+          { href: "/", label: "Home" },
+          { href: "/doctor-profile", label: "Doctors" },
+          { href: "/lab-tests", label: "Lab Tests" },
+          { href: "/appointments", label: "Appointments" },
+          { href: "/patient-dashboard", label: "Dashboard" },
+          { href: "/patient-profile", label: "My Profile" },
+        ]
+    : [
+        { href: "/", label: "Home" },
+        { href: "/doctor-profile", label: "Doctors" },
+        { href: "/lab-tests", label: "Lab Tests" },
+        { href: "/login", label: "Login / Sign up" },
+      ];
 
   return (
     <>
-      {/* Click Outside Backdrop */}
+      {/* Backdrop — closes mobile menu on outside click */}
       {menuOpen && (
         <div
           className="fixed inset-0 z-40 bg-transparent"
@@ -30,9 +114,8 @@ export default function Navbar() {
         {/* Main Navbar Container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
           <div className="flex items-center justify-between h-16">
-            {/* Left: Hamburger Menu Button & Logo */}
+            {/* Left: Hamburger + Logo */}
             <div className="flex items-center gap-2">
-              {/* Hamburger Button */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="text-gray-600 hover:text-gray-900 p-1 flex-shrink-0 relative z-50"
@@ -58,7 +141,16 @@ export default function Navbar() {
               </button>
 
               {/* Logo */}
-              <Link href="/" className="flex items-center gap-1 flex-shrink-0">
+              <Link
+                href={
+                  !user
+                    ? "/"
+                    : user.role === "doctor"
+                      ? "/doctor-dashboard"
+                      : "/patient-dashboard"
+                }
+                className="flex items-center gap-1 flex-shrink-0"
+              >
                 <div className="w-9 h-9 relative flex items-center justify-center">
                   <Image
                     src="/site-logo.png"
@@ -96,52 +188,95 @@ export default function Navbar() {
               />
             </div>
 
-            {/* Right: Quick Action Buttons (Desktop Only) */}
+            {/* Right: Desktop Nav */}
             <nav className="hidden md:flex items-center gap-2">
-              <NavButton
-                href="/appointments"
-                icon={
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="#3864d5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                }
-                label="Appointments"
-              />
+              {/* Role-based nav links */}
+              {desktopNavItems.map((item) => (
+                <NavButton
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={null}
+                />
+              ))}
 
-              <NavButton
-                href="/patient-dashboard"
-                icon={
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="#3864d5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                    />
-                  </svg>
-                }
-                label="Dashboard"
-              />
+              {/* Guest: Login / Sign up */}
+              {!user && (
+                <Link
+                  href="/login"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[#0D1B3E] border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  Login / Sign up
+                </Link>
+              )}
 
-              <Link
-                href="/login"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[#0D1B3E] hover:bg-gray-100 transition-colors border border-gray-200"
+              {/* Authenticated: name + profile dropdown */}
+              {user && (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setDropdownOpen((prev) => !prev)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#0D1B3E] hover:bg-gray-100 transition-colors"
+                  >
+                    {/* Avatar initials */}
+                    <span className="w-7 h-7 rounded-full bg-[#3864D5] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {user.name?.charAt(0).toUpperCase() ?? "U"}
+                    </span>
+                    <span className="hidden lg:block max-w-[120px] truncate">
+                      {user.name}
+                    </span>
+                    {/* Chevron — rotates when open */}
+                    <svg
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Profile dropdown panel */}
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
+                      {dropdownItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2.5 text-sm font-medium text-[#0D1B3E] hover:bg-gray-50 transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                      <div className="my-1 border-t border-gray-100" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </nav>
+
+            {/* Mobile: avatar button (authenticated) or login icon (guest) */}
+            {user ? (
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="md:hidden w-8 h-8 rounded-full bg-[#3864D5] text-white text-xs font-bold flex items-center justify-center flex-shrink-0"
+                aria-label="Open menu"
               >
+                {user.name?.charAt(0).toUpperCase() ?? "U"}
+              </button>
+            ) : (
+              <Link href="/login" className="md:hidden p-2 text-gray-600">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -155,30 +290,12 @@ export default function Navbar() {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                Login / Sign up
               </Link>
-            </nav>
-
-            {/* Quick Login Button (Mobile Only) */}
-            <Link href="/login" className="md:hidden p-2 text-gray-600">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="#3864d5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </Link>
+            )}
           </div>
         </div>
 
-        {/* Global Full-Width Dropdown Menu */}
+        {/* Mobile / Hamburger Dropdown Menu */}
         <div
           className={`absolute left-0 w-full top-16 bg-white shadow-xl border-t border-gray-100 py-3 pb-4 space-y-1 transition-all duration-300 ease-in-out z-50 origin-top ${
             menuOpen
@@ -187,18 +304,48 @@ export default function Navbar() {
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            {/* Menu Links */}
-            <div className="flex flex-col gap-1">
-              {menuItems.map((item) => (
+            {/* Authenticated: user greeting with role label */}
+            {user && (
+              <div className="px-4 py-2.5 mb-1 flex items-center gap-2.5 border-b border-gray-100 pb-3">
+                <span className="w-8 h-8 rounded-full bg-[#3864D5] text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
+                  {user.name?.charAt(0).toUpperCase() ?? "U"}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-[#0D1B3E] leading-tight">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-gray-400 capitalize">
+                    {user.role}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Role-based mobile menu links */}
+            <div className="flex flex-col gap-0.5">
+              {mobileMenuItems.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.href + item.label}
                   href={item.href}
-                  className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                   onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-sm font-medium text-[#0D1B3E] hover:bg-gray-50 transition-colors"
                 >
                   {item.label}
                 </Link>
               ))}
+
+              {/* Logout — only when authenticated */}
+              {user && (
+                <>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

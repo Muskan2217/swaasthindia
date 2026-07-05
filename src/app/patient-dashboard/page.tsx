@@ -1,3 +1,8 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StatCard from "@/components/patient-dashboard/StatsCards";
@@ -10,6 +15,20 @@ import BookTestCTA from "@/components/patient-dashboard/BookTestCTA";
 import PatientInfoCard from "@/components/patient-dashboard/PatientInfoCard";
 
 export default function PatientDashboard() {
+
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
+    if (user.role !== "patient") {
+      router.replace("/doctor-dashboard");
+    }
+  }, [user, router]);
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
@@ -26,6 +45,7 @@ export default function PatientDashboard() {
               accentColor={card.accentColor}
             />
           ))}
+          
         </div>
         <PatientInfoCard />
 
