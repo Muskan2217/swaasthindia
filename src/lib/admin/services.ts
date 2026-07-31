@@ -18,10 +18,9 @@ import type {
 export function login(email: string, password: string): Promise<LoginResponse> {
   return apiRequest<LoginResponse>("/login", {
     method: "POST",
-    body: { login: email, password }, 
+    body: { login: email, password },
   });
 }
-
 
 export function logout(): Promise<unknown> {
   return apiRequest("/logout", { method: "POST" });
@@ -44,33 +43,51 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 // Doctors
 // ---------------------------------------------------------------------------
 
-export interface DoctorListParams {
+export interface DoctorListParams
+  extends Record<string, string | number | boolean | null | undefined> {
   search?: string;
   page?: number;
   per_page?: number;
 }
 
-export function getDoctors(params: DoctorListParams = {}): Promise<PaginatedResponse<ApiDoctor>> {
-  return apiRequest<PaginatedResponse<ApiDoctor>>("/admin/doctors", { query: params });
+export function getDoctors(
+  params: DoctorListParams = {}
+): Promise<PaginatedResponse<ApiDoctor>> {
+  return apiRequest<PaginatedResponse<ApiDoctor>>("/admin/doctors", {
+    query: params,
+  });
 }
 
 export async function getDoctor(id: number | string): Promise<ApiDoctor> {
-  const res = await apiRequest<{ data: ApiDoctor }>(`/admin/doctors/${id}`);
+  const res = await apiRequest<{ data: ApiDoctor }>(
+    `/admin/doctors/${id}`
+  );
   return res.data;
 }
 
 export async function approveDoctor(id: number | string): Promise<ApiDoctor> {
-  const res = await apiRequest<{ data: ApiDoctor }>(`/admin/doctors/${id}/approve`, { method: "PATCH" });
+  const res = await apiRequest<{ data: ApiDoctor }>(
+    `/admin/doctors/${id}/approve`,
+    { method: "PATCH" }
+  );
   return res.data;
 }
 
 export async function rejectDoctor(id: number | string): Promise<ApiDoctor> {
-  const res = await apiRequest<{ data: ApiDoctor }>(`/admin/doctors/${id}/reject`, { method: "PATCH" });
+  const res = await apiRequest<{ data: ApiDoctor }>(
+    `/admin/doctors/${id}/reject`,
+    { method: "PATCH" }
+  );
   return res.data;
 }
 
-export async function toggleDoctorStatus(id: number | string): Promise<ApiDoctor> {
-  const res = await apiRequest<{ data: ApiDoctor }>(`/admin/doctors/${id}/toggle-status`, { method: "PATCH" });
+export async function toggleDoctorStatus(
+  id: number | string
+): Promise<ApiDoctor> {
+  const res = await apiRequest<{ data: ApiDoctor }>(
+    `/admin/doctors/${id}/toggle-status`,
+    { method: "PATCH" }
+  );
   return res.data;
 }
 
@@ -78,18 +95,25 @@ export async function toggleDoctorStatus(id: number | string): Promise<ApiDoctor
 // Patients
 // ---------------------------------------------------------------------------
 
-export interface PatientListParams {
+export interface PatientListParams
+  extends Record<string, string | number | boolean | null | undefined> {
   search?: string;
   page?: number;
   per_page?: number;
 }
 
-export function getPatients(params: PatientListParams = {}): Promise<PaginatedResponse<ApiPatient>> {
-  return apiRequest<PaginatedResponse<ApiPatient>>("/admin/patients", { query: params });
+export function getPatients(
+  params: PatientListParams = {}
+): Promise<PaginatedResponse<ApiPatient>> {
+  return apiRequest<PaginatedResponse<ApiPatient>>("/admin/patients", {
+    query: params,
+  });
 }
 
 export async function getPatient(id: number | string): Promise<ApiPatient> {
-  const res = await apiRequest<{ data: ApiPatient }>(`/admin/patients/${id}`);
+  const res = await apiRequest<{ data: ApiPatient }>(
+    `/admin/patients/${id}`
+  );
   return res.data;
 }
 
@@ -97,7 +121,8 @@ export async function getPatient(id: number | string): Promise<ApiPatient> {
 // Appointments
 // ---------------------------------------------------------------------------
 
-export interface AppointmentListParams {
+export interface AppointmentListParams
+  extends Record<string, string | number | boolean | null | undefined> {
   search?: string;
   status?: AppointmentStatus;
   doctor_id?: number;
@@ -109,11 +134,20 @@ export interface AppointmentListParams {
 export function getAppointments(
   params: AppointmentListParams = {}
 ): Promise<PaginatedResponse<ApiAppointment>> {
-  return apiRequest<PaginatedResponse<ApiAppointment>>("/admin/appointments", { query: params });
+  return apiRequest<PaginatedResponse<ApiAppointment>>(
+    "/admin/appointments",
+    {
+      query: params,
+    }
+  );
 }
 
-export async function getAppointment(id: number | string): Promise<ApiAppointment> {
-  const res = await apiRequest<{ data: ApiAppointment }>(`/admin/appointments/${id}`);
+export async function getAppointment(
+  id: number | string
+): Promise<ApiAppointment> {
+  const res = await apiRequest<{ data: ApiAppointment }>(
+    `/admin/appointments/${id}`
+  );
   return res.data;
 }
 
@@ -121,10 +155,13 @@ export async function updateAppointmentStatus(
   id: number | string,
   status: AppointmentStatus
 ): Promise<ApiAppointment> {
-  const res = await apiRequest<{ data: ApiAppointment }>(`/admin/appointments/${id}/status`, {
-    method: "PATCH",
-    body: { status },
-  });
+  const res = await apiRequest<{ data: ApiAppointment }>(
+    `/admin/appointments/${id}/status`,
+    {
+      method: "PATCH",
+      body: { status },
+    }
+  );
   return res.data;
 }
 
@@ -132,9 +169,15 @@ export async function updateAppointmentStatus(
 // Recent Activities
 // ---------------------------------------------------------------------------
 
-export async function getRecentActivities(limit = 10): Promise<RecentActivities> {
-  const res = await apiRequest<{ data: RecentActivities }>("/admin/recent-activities", {
-    query: { limit },
-  });
+export async function getRecentActivities(
+  limit = 10
+): Promise<RecentActivities> {
+  const res = await apiRequest<{ data: RecentActivities }>(
+    "/admin/recent-activities",
+    {
+      query: { limit },
+    }
+  );
+
   return res.data;
 }
