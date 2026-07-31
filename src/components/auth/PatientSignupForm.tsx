@@ -1,6 +1,6 @@
 // src/components/auth/PatientSignupForm.tsx
 "use client";
-import { registerPatient } from "@/lib/api";
+import { registerUser } from "@/lib/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -65,7 +65,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(true);
 
   try {
-    await registerPatient({
+    await registerUser({
       name: form.fullName,
       email: form.email,
       mobile: form.mobile,

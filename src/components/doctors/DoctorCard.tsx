@@ -1,4 +1,5 @@
-// src/components/doctors/DoctorCard.tsx
+
+import Link from "next/link";
 import {
   BadgeCheck,
   Star,
@@ -22,6 +23,7 @@ const availabilityStyles: Record<Doctor["availability"], string> = {
 
 export default function DoctorCard({ doctor, view = "list" }: DoctorCardProps) {
   const isList = view === "list";
+  const profileHref = doctor.slug ? `/doctor-profile/${doctor.slug}` : "#";
 
   return (
     <div
@@ -117,12 +119,14 @@ export default function DoctorCard({ doctor, view = "list" }: DoctorCardProps) {
           )}
 
           <div className={`mt-1 flex gap-2 ${isList ? "sm:flex-col sm:w-40" : ""}`}>
-            <button
-              type="button"
-              className="flex-1 rounded-lg border border-blue-200 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
+            {/* FIX: was a plain <button> with no navigation. Now links to
+                the Doctor Profile page using the doctor's slug. */}
+            <Link
+              href={profileHref}
+              className="flex-1 inline-flex items-center justify-center rounded-lg border border-blue-200 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
             >
               View Profile
-            </button>
+            </Link>
             <button
               type="button"
               className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700"

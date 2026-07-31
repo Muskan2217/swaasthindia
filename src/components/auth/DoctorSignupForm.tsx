@@ -1,6 +1,10 @@
 // src/components/auth/DoctorSignupForm.tsx
+//
+// ⚠️ REQUIRES auth-dummy-data.ts UPDATE — see companion file below.
+// DoctorSignupFormData must include: qualification (already present),
+// registrationCertificate: File | null, identityProof: File | null
 "use client";
-import { registerPatient } from "@/lib/api";
+import { registerUser } from "@/lib/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -9,7 +13,6 @@ import {
   Phone,
   Mail,
   Stethoscope,
-  Briefcase,
   Building2,
   Hash,
   ArrowRight,
@@ -18,7 +21,6 @@ import {
 import {
   DOCTOR_SIGNUP_DEFAULTS,
   SPECIALIZATIONS,
-  EXPERIENCE_OPTIONS,
   type DoctorSignupFormData,
 } from "@/lib/auth-dummy-data";
 import {
@@ -32,30 +34,60 @@ interface Errors extends Partial<Record<keyof DoctorSignupFormData, string>> {
   general?: string;
 }
 
+// NOTE: city, state, consultationFee, languages are intentionally NOT collected
+// at signup. Doctor fills these later from the profile-edit screen after
+// admin approval. Qualification and all documents (except profile photo)
+// ARE required at signup per production requirements.
 function validate(data: DoctorSignupFormData): Errors {
   const errors: Errors = {};
+
+  // Personal Details
   if (!data.fullName.trim()) errors.fullName = "Full name is required.";
+
   if (!/^\d{10}$/.test(data.mobile))
     errors.mobile = "Enter a valid 10-digit mobile number.";
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
     errors.email = "Enter a valid email address.";
+
   if (!data.address.trim()) errors.address = "Address is required.";
+
   if (data.password.length < 6)
     errors.password = "Password must be at least 6 characters.";
+
   if (data.password !== data.confirmPassword)
     errors.confirmPassword = "Passwords do not match.";
+
+  // Professional Details
   if (!data.specialization)
     errors.specialization = "Please select a specialization.";
-  if (!data.experience) errors.experience = "Please select your experience.";
+
+  if (!data.experience) errors.experience = "Experience is required.";
+
+  if (!data.qualification.trim())
+    errors.qualification = "Qualification is required.";
+
   if (!data.clinicName.trim())
     errors.clinicName = "Clinic / Hospital name is required.";
+
   if (!data.registrationNumber.trim())
     errors.registrationNumber = "Medical registration number is required.";
-  if (!data.profilePhoto) errors.profilePhoto = "Profile photo is required.";
+
+  // Documents — Registration Certificate, Degree Certificate, Identity Proof
+  // are mandatory. Profile Photo remains optional.
+  if (!data.registrationCertificate)
+    errors.registrationCertificate = "Registration certificate is required.";
+
   if (!data.degreeCertificate)
     errors.degreeCertificate = "Degree certificate is required.";
+
+  if (!data.identityProof)
+    errors.identityProof = "Identity proof is required.";
+
+  // Terms
   if (!data.acceptTerms)
     errors.acceptTerms = "You must accept the Terms & Conditions.";
+
   return errors;
 }
 
@@ -73,37 +105,105 @@ export default function DoctorSignupForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("✅ SUBMIT CLICKED");
+    console.log("Form Data:", form);
+
     const errs = validate(form);
-    if (Object.keys(errs).length) {
+
+    console.log("Validation Errors:", errs);
+
+    if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      setLoading(false);
       return;
     }
+
     setErrors({});
     setLoading(true);
 
-// Register doctor account and redirect to the pending approval page.
-// Doctor accounts require admin verification before they can log in.
+    try {
+      console.log("📤 Calling registerUser API...");
 
-try {
-  await registerPatient({
-    name: form.fullName,
-    email: form.email,
-    mobile: form.mobile,
-    address: form.address,
-    password: form.password,
-    password_confirmation: form.confirmPassword,
-    role: "doctor",
-  });
+      // Field names below match Laravel's AuthController@register exactly.
+      // city, state, consultation_fee, languages are deliberately NOT sent —
+      // doctor adds these later via profile edit after admin approval.
+      const response = await registerUser({
+        name: form.fullName,
+        email: form.email,
+        mobile: form.mobile,
+        address: form.address,
+        password: form.password,
+        password_confirmation: form.confirmPassword,
+        role: "doctor",
 
-  router.push("/pending-approval");
-} catch (err: any) {
-  setErrors({
-    general: err.message || "Registration failed",
-  });
-} finally {
-  setLoading(false);
-}
-}; 
+        specialization: form.specialization,
+        experience_years: Number(form.experience),
+        hospital_name: form.clinicName,
+        qualification: form.qualification,
+        registration_number: form.registrationNumber,
+
+        registration_certificate: form.registrationCertificate,
+        degree_certificate: form.degreeCertificate,
+        identity_proof: form.identityProof,
+        profile_photo: form.profilePhoto, // optional — may be null
+      });
+
+      console.log("✅ Registration Success:", response);
+
+      router.push("/pending-approval");
+    } catch (err: any) {
+      console.error("❌ API Error:", err);
+
+      // Laravel 422 responses look like:
+      // { message: "...", errors: { field_name: ["msg1", "msg2"] } }
+      // Map each backend field error onto the matching form field so the
+      // user sees it inline, instead of only a generic banner message.
+      if (err?.errors && typeof err.errors === "object") {
+        const fieldMap: Record<string, keyof DoctorSignupFormData> = {
+          name: "fullName",
+          email: "email",
+          mobile: "mobile",
+          address: "address",
+          password: "password",
+          specialization: "specialization",
+          experience_years: "experience",
+          hospital_name: "clinicName",
+          qualification: "qualification",
+          registration_number: "registrationNumber",
+          registration_certificate: "registrationCertificate",
+          degree_certificate: "degreeCertificate",
+          identity_proof: "identityProof",
+          profile_photo: "profilePhoto",
+        };
+
+        const mappedErrors: Errors = {};
+        Object.entries(err.errors).forEach(([backendField, messages]) => {
+          const frontendField = fieldMap[backendField];
+          const message = Array.isArray(messages) ? messages[0] : String(messages);
+          if (frontendField) {
+            mappedErrors[frontendField] = message;
+          } else {
+            // Unknown field — surface it in the general banner so it's not lost
+            mappedErrors.general = mappedErrors.general
+              ? `${mappedErrors.general} ${message}`
+              : message;
+          }
+        });
+
+        setErrors(mappedErrors);
+      } else {
+        setErrors({
+          general:
+            err?.message ||
+            err?.error ||
+            "Registration failed. Please try again.",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -119,15 +219,11 @@ try {
 
       {errors.general && (
         <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
-          <AlertCircle
-            size={15}
-            className="text-red-500 flex-shrink-0 mt-0.5"
-          />
-          <p className="text-sm text-red-600 font-medium">{errors.general}</p>
+          <AlertCircle size={15} className="text-red-500 mt-0.5" />
+          <p className="text-sm text-red-600">{errors.general}</p>
         </div>
       )}
 
-      {/* ── Personal details ─────────────────────────── */}
       <SectionLabel>Personal Details</SectionLabel>
 
       <InputField
@@ -138,7 +234,6 @@ try {
         error={errors.fullName}
         required
         icon={<User size={15} />}
-        autoComplete="name"
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -151,28 +246,28 @@ try {
           error={errors.mobile}
           required
           icon={<Phone size={15} />}
-          autoComplete="tel"
         />
+
         <InputField
           label="Email Address"
           type="email"
-          placeholder="doctor@clinic.com"
+          placeholder="doctor@example.com"
           value={form.email}
           onChange={set("email")}
           error={errors.email}
           required
           icon={<Mail size={15} />}
-          autoComplete="email"
-        />
-        <InputField
-          label="Address"
-          placeholder="Enter clinic/home address"
-          value={form.address}
-          onChange={set("address")}
-          error={errors.address}
-          required
         />
       </div>
+
+      <InputField
+        label="Address"
+        placeholder="Enter your address"
+        value={form.address}
+        onChange={set("address")}
+        error={errors.address}
+        required
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <PasswordField
@@ -182,8 +277,8 @@ try {
           onChange={set("password")}
           error={errors.password}
           required
-          autoComplete="new-password"
         />
+
         <PasswordField
           label="Confirm Password"
           placeholder="Re-enter password"
@@ -191,11 +286,9 @@ try {
           onChange={set("confirmPassword")}
           error={errors.confirmPassword}
           required
-          autoComplete="new-password"
         />
       </div>
 
-      {/* ── Professional details ──────────────────────── */}
       <SectionLabel>Professional Details</SectionLabel>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -208,20 +301,30 @@ try {
           error={errors.specialization}
           required
         />
-        <SelectField
-          label="Experience"
+
+        <InputField
+          label="Experience (Years)"
+          type="number"
+          placeholder="5"
           value={form.experience}
           onChange={set("experience")}
-          options={EXPERIENCE_OPTIONS}
-          placeholder="Select experience"
           error={errors.experience}
           required
         />
       </div>
 
       <InputField
+        label="Qualification"
+        placeholder="MBBS, MD"
+        value={form.qualification}
+        onChange={set("qualification")}
+        error={errors.qualification}
+        required
+      />
+
+      <InputField
         label="Clinic / Hospital Name"
-        placeholder="Swaasth Heart & Care Clinic"
+        placeholder="ABC Hospital"
         value={form.clinicName}
         onChange={set("clinicName")}
         error={errors.clinicName}
@@ -239,19 +342,25 @@ try {
         icon={<Hash size={15} />}
       />
 
-      {/* ── Document uploads ──────────────────────────── */}
+      {/*
+        City, State, Consultation Fee, Languages are intentionally removed
+        from signup. Doctor completes these later from the profile-edit
+        screen after admin approval.
+      */}
+
       <SectionLabel>Document Uploads</SectionLabel>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FileUploadField
-          label="Profile Photo"
-          accept="image/*"
-          hint="JPG, PNG up to 5 MB"
-          fileName={form.profilePhoto?.name}
-          onChange={(f) => set("profilePhoto")(f)}
-          error={errors.profilePhoto}
+          label="Medical Registration Certificate"
+          accept="image/*,.pdf"
+          hint="PDF or image up to 10 MB"
+          fileName={form.registrationCertificate?.name}
+          onChange={(f) => set("registrationCertificate")(f)}
+          error={errors.registrationCertificate}
           required
         />
+
         <FileUploadField
           label="Degree Certificate"
           accept="image/*,.pdf"
@@ -263,69 +372,58 @@ try {
         />
       </div>
 
-      {/* Terms */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FileUploadField
+          label="Identity Proof"
+          accept="image/*,.pdf"
+          hint="Aadhaar / PAN / Passport — PDF or image up to 10 MB"
+          fileName={form.identityProof?.name}
+          onChange={(f) => set("identityProof")(f)}
+          error={errors.identityProof}
+          required
+        />
+
+        <FileUploadField
+          label="Profile Photo"
+          accept="image/*"
+          hint="Optional — JPG, PNG up to 5 MB"
+          fileName={form.profilePhoto?.name}
+          onChange={(f) => set("profilePhoto")(f)}
+          error={errors.profilePhoto}
+        />
+      </div>
+
       <div className="flex flex-col gap-1">
-        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <label className="flex items-start gap-2">
           <input
             type="checkbox"
             checked={form.acceptTerms}
             onChange={(e) => set("acceptTerms")(e.target.checked)}
-            className="w-4 h-4 accent-[#3864D5] rounded mt-0.5 flex-shrink-0"
           />
-          <span className="text-sm text-gray-600 font-medium leading-relaxed">
+          <span className="text-sm">
             I accept the{" "}
-            <Link
-              href="/terms"
-              className="text-[#3864D5] font-semibold hover:underline"
-            >
+            <Link href="/terms" className="text-[#3864D5] font-semibold">
               Terms & Conditions
-            </Link>{" "}
-            and confirm all information provided is accurate.
+            </Link>
           </span>
         </label>
+
         {errors.acceptTerms && (
-          <p className="text-xs text-red-500 font-medium pl-6">
-            {errors.acceptTerms}
-          </p>
+          <p className="text-xs text-red-500">{errors.acceptTerms}</p>
         )}
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-[#E8192C] hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3.5 rounded-[14px] transition-all shadow-md shadow-red-200 mt-1"
+        className="w-full bg-[#E8192C] text-white font-semibold py-3.5 rounded-[14px] disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {loading ? (
-          <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
-            />
-          </svg>
-        ) : (
-          <>
-            <Stethoscope size={15} />
-            Submit For Verification
-            <ArrowRight size={15} />
-          </>
-        )}
+        {loading ? "Submitting..." : "Submit For Verification"}
       </button>
 
       <p className="text-center text-sm text-gray-500">
         Already registered?{" "}
-        <Link
-          href="/login"
-          className="font-bold text-[#3864D5] hover:text-[#2450B0] transition-colors"
-        >
+        <Link href="/login" className="font-semibold text-[#3864D5]">
           Sign in
         </Link>
       </p>

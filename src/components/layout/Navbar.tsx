@@ -82,14 +82,14 @@ export default function Navbar() {
     ? user.role === "doctor"
       ? [
           { href: "/", label: "Home" },
+          { href: "/doctor-listing", label: "Doctors" },
           { href: "/appointments", label: "Appointments" },
           { href: "/doctor-dashboard", label: "Dashboard" },
           { href: "/profile", label: "My Profile" },
-          { href: "/doctor-listing", label: "Doctors" },
         ]
       : [
           { href: "/", label: "Home" },
-          { href: "/doctor-profile", label: "Doctors" },
+          { href: "/doctor-listing", label: "Doctors" },
           { href: "/lab-tests", label: "Lab Tests" },
           { href: "/appointments", label: "Appointments" },
           { href: "/patient-dashboard", label: "Dashboard" },
@@ -97,7 +97,7 @@ export default function Navbar() {
         ]
     : [
         { href: "/", label: "Home" },
-        { href: "/doctor-profile", label: "Doctors" },
+        { href: "/doctor-listing", label: "Doctors" },
         { href: "/lab-tests", label: "Lab Tests" },
         { href: "/login", label: "Login / Sign up" },
       ];

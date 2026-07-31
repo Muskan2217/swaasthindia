@@ -22,21 +22,21 @@ export interface AuthUser {
 
 // ── Dummy accounts for login simulation ──────────────────────────────────────
 export const DUMMY_USERS: AuthUser[] = [
- {
-  id: "u1",
-  name: "Rahul Verma",
-  email: "patient@swaasth.in",
-  address: "Delhi",
-  mobile: "9876543210",
-  password: "patient123",
-  role: "patient",
-  redirectTo: "/patient-dashboard",
-},
+  {
+    id: "u1",
+    name: "Rahul Verma",
+    email: "patient@swaasth.in",
+    address: "Delhi",
+    mobile: "9876543210",
+    password: "patient123",
+    role: "patient",
+    redirectTo: "/patient-dashboard",
+  },
   {
     id: "u2",
     name: "Dr. XYZ",
     email: "doctor@swaasth.in",
-    address:"kolkata",
+    address: "kolkata",
     mobile: "9876500000",
     password: "doctor123",
     role: "doctor",
@@ -79,6 +79,13 @@ export const PATIENT_SIGNUP_DEFAULTS: PatientSignupFormData = {
 };
 
 // ── Doctor signup form ────────────────────────────────────────────────────────
+//
+// Required at signup: fullName, mobile, email, address, password, specialization,
+//   experience, clinicName, qualification, registrationNumber,
+//   registrationCertificate, degreeCertificate, identityProof, acceptTerms
+//
+// Optional at signup (doctor fills these later via profile edit after
+//   admin approval): profilePhoto, city, state, consultationFee, languages, about
 export interface DoctorSignupFormData {
   fullName: string;
   mobile: string;
@@ -89,10 +96,23 @@ export interface DoctorSignupFormData {
   specialization: string;
   experience: string;
   clinicName: string;
+  qualification: string;
   registrationNumber: string;
-  profilePhoto: File | null;
-  degreeCertificate: File | null;
+
+  // Documents
+  registrationCertificate: File | null; // required
+  degreeCertificate: File | null; // required
+  identityProof: File | null; // required
+  profilePhoto: File | null; // optional — can be added later from profile edit
+
   acceptTerms: boolean;
+
+  // Optional — filled later via profile edit after admin approval
+  city: string;
+  state: string;
+  consultationFee: string;
+  languages: string;
+  about: string;
 }
 
 export const DOCTOR_SIGNUP_DEFAULTS: DoctorSignupFormData = {
@@ -105,10 +125,21 @@ export const DOCTOR_SIGNUP_DEFAULTS: DoctorSignupFormData = {
   specialization: "",
   experience: "",
   clinicName: "",
+  qualification: "",
   registrationNumber: "",
-  profilePhoto: null,
+
+  registrationCertificate: null,
   degreeCertificate: null,
+  identityProof: null,
+  profilePhoto: null,
+
   acceptTerms: false,
+
+  city: "",
+  state: "",
+  consultationFee: "",
+  languages: "",
+  about: "",
 };
 
 // ── Specializations list ─────────────────────────────────────────────────────

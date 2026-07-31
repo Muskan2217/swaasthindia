@@ -10,6 +10,10 @@ export type Availability = "Available Today" | "Available Tomorrow" | "Not Avail
 export interface Doctor {
   id: string;
   name: string;
+  // FIX: optional slug added so real API-backed doctors (which always
+  // have one) can link to /doctor-profile/[slug]. Optional keeps the
+  // dummy array below valid without editing every entry.
+  slug?: string;
   image: string;
   verified: boolean;
   qualification: string;
