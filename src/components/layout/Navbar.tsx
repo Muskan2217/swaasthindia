@@ -45,13 +45,23 @@ export default function Navbar() {
     }
   };
 
+  // Helper for profile route determination
+  const getProfileHref = () => {
+    if (!user) return "/login";
+
+    if (user.role === "doctor") {
+      return `/doctor-profile/${user.slug}`;
+    }
+
+    return `/patient-profile/${user.id}`;
+  };
+
   // Desktop nav links — role-based
   const desktopNavItems = user
     ? user.role === "doctor"
       ? [
           { href: "/", label: "Home" },
-          { href: "/doctor-listing", label: "Doctors" },
-          { href: "/appointments", label: "Appointments" },
+          { href: "/doctor-dashboard", label: "Dashboard" },
         ]
       : [
           { href: "/", label: "Home" },
@@ -65,16 +75,16 @@ export default function Navbar() {
         { href: "/lab-tests", label: "Lab Tests" },
       ];
 
-  // Profile dropdown items — dashboard href differs by role
+  // Profile dropdown items — role-based
   const dropdownItems = user
-    ? [
-        {
-          href:
-            user.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard",
-          label: "Dashboard",
-        },
-        { href: "/profile", label: "My Profile" },
-      ]
+    ? user.role === "doctor"
+      ? [
+          { href: getProfileHref(), label: "My Profile" },
+        ]
+      : [
+          { href: "/patient-dashboard", label: "Dashboard" },
+          { href: getProfileHref(), label: "My Profile" },
+        ]
     : [];
 
   // Mobile hamburger links — role-based
@@ -82,10 +92,8 @@ export default function Navbar() {
     ? user.role === "doctor"
       ? [
           { href: "/", label: "Home" },
-          { href: "/doctor-listing", label: "Doctors" },
-          { href: "/appointments", label: "Appointments" },
           { href: "/doctor-dashboard", label: "Dashboard" },
-          { href: "/profile", label: "My Profile" },
+          { href: getProfileHref(), label: "My Profile" },
         ]
       : [
           { href: "/", label: "Home" },
@@ -93,7 +101,7 @@ export default function Navbar() {
           { href: "/lab-tests", label: "Lab Tests" },
           { href: "/appointments", label: "Appointments" },
           { href: "/patient-dashboard", label: "Dashboard" },
-          { href: "/patient-profile", label: "My Profile" },
+          { href: getProfileHref(), label: "My Profile" },
         ]
     : [
         { href: "/", label: "Home" },
@@ -195,7 +203,7 @@ export default function Navbar() {
               {/* Role-based nav links */}
               {desktopNavItems.map((item) => (
                 <NavButton
-                  key={item.href}
+                  key={item.href + item.label}
                   href={item.href}
                   label={item.label}
                   icon={null}
@@ -208,7 +216,7 @@ export default function Navbar() {
                   href="/login"
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[#0D1B3E] border border-gray-200 hover:bg-gray-100 transition-colors"
                 >
-                  Login / Sign up
+                  Login / Sign Up
                 </Link>
               )}
 
@@ -247,7 +255,7 @@ export default function Navbar() {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
                       {dropdownItems.map((item) => (
                         <Link
-                          key={item.href}
+                          key={item.href + item.label}
                           href={item.href}
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2.5 text-sm font-medium text-[#0D1B3E] hover:bg-gray-50 transition-colors"
