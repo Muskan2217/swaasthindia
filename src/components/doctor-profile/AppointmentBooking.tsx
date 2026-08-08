@@ -1,8 +1,17 @@
 "use client";
 
 // src/components/doctor-profile/AppointmentBooking.tsx
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useMemo, useState } from "react";
-import { Calendar, Sun, CalendarCheck, CheckCircle2, X, Loader2 } from "lucide-react";
+import {
+  Calendar,
+  Sun,
+  CalendarCheck,
+  CheckCircle2,
+  X,
+  Loader2,
+} from "lucide-react";
 import {
   getDoctorSlots,
   createAppointment,
@@ -23,13 +32,17 @@ interface DateSlot {
 
 function buildDateSlots(days: number): DateSlot[] {
   const weekdayFmt = new Intl.DateTimeFormat("en-US", { weekday: "short" });
-  const dayFmt = new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short" });
+  const dayFmt = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "short",
+  });
 
   return Array.from({ length: days }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() + i);
 
-    const topLabel = i === 0 ? "Today" : i === 1 ? "Tomorrow" : weekdayFmt.format(date);
+    const topLabel =
+      i === 0 ? "Today" : i === 1 ? "Tomorrow" : weekdayFmt.format(date);
 
     return {
       key: date.toISOString().slice(0, 10),
@@ -54,6 +67,8 @@ export default function AppointmentBooking({
   const [slotsError, setSlotsError] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
+  const router = useRouter();
+  const { token } = useAuth();
 
   // Fetch real slot availability whenever the selected date changes
   useEffect(() => {
@@ -116,7 +131,9 @@ export default function AppointmentBooking({
             >
               <span className="block text-xs font-medium">{slot.topLabel}</span>
               <span className="mt-0.5 block font-semibold">{slot.day}</span>
-              <span className="block text-xs text-slate-400">{slot.weekday}</span>
+              <span className="block text-xs text-slate-400">
+                {slot.weekday}
+              </span>
             </button>
           );
         })}
@@ -209,18 +226,26 @@ export default function AppointmentBooking({
         <button
           type="button"
           disabled={!selectedTime}
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            if (!token) {
+              router.push("/login");
+              return;
+            }
+
+            setShowForm(true);
+          }}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
-          Confirm Appointment →
+          {token ? "Confirm Appointment →" : "Login to Book →"}
         </button>
       </div>
 
-      {showForm && selectedTime && (
+      {showForm && selectedTime && token && (
         <BookingFormModal
           doctorSlug={doctorSlug}
           date={selectedDate}
           time={selectedTime}
+          token={token}
           onClose={() => setShowForm(false)}
         />
       )}
@@ -236,10 +261,17 @@ interface BookingFormModalProps {
   doctorSlug: string;
   date: DateSlot;
   time: string;
+  token: string;
   onClose: () => void;
 }
 
-function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalProps) {
+function BookingFormModal({
+  doctorSlug,
+  date,
+  time,
+  token,
+  onClose,
+}: BookingFormModalProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -258,17 +290,20 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
     setFieldErrors({});
 
     try {
-      await createAppointment({
-        doctorSlug,
-        patientName: name,
-        patientPhone: phone,
-        patientEmail: email,
-        patientAge: Number(age),
-        patientGender: gender as "Male" | "Female" | "Other",
-        appointmentDate: date.key,
-        appointmentTime: time,
-        notes,
-      });
+      await createAppointment(
+        {
+          doctorSlug,
+          patientName: name,
+          patientPhone: phone,
+          patientEmail: email,
+          patientAge: Number(age),
+          patientGender: gender as "Male" | "Female" | "Other",
+          appointmentDate: date.key,
+          appointmentTime: time,
+          notes,
+        },
+        token,
+      );
       setSuccess(true);
     } catch (error) {
       if (error instanceof AppointmentValidationError) {
@@ -321,7 +356,8 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
             </div>
 
             <p className="mb-4 text-sm text-slate-500">
-              {date.topLabel}, {date.day} at <span className="font-medium text-slate-700">{time}</span>
+              {date.topLabel}, {date.day} at{" "}
+              <span className="font-medium text-slate-700">{time}</span>
             </p>
 
             {formError && (
@@ -343,7 +379,9 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                 />
                 {fieldErrors.patient_name && (
-                  <p className="mt-1 text-xs text-red-500">{fieldErrors.patient_name[0]}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {fieldErrors.patient_name[0]}
+                  </p>
                 )}
               </div>
 
@@ -359,7 +397,9 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                 />
                 {fieldErrors.patient_phone && (
-                  <p className="mt-1 text-xs text-red-500">{fieldErrors.patient_phone[0]}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {fieldErrors.patient_phone[0]}
+                  </p>
                 )}
               </div>
 
@@ -378,7 +418,9 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                   />
                   {fieldErrors.patient_age && (
-                    <p className="mt-1 text-xs text-red-500">{fieldErrors.patient_age[0]}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {fieldErrors.patient_age[0]}
+                    </p>
                   )}
                 </div>
 
@@ -392,13 +434,17 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
                     onChange={(e) => setGender(e.target.value)}
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                   >
-                    <option value="" disabled>Select</option>
+                    <option value="" disabled>
+                      Select
+                    </option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
                   {fieldErrors.patient_gender && (
-                    <p className="mt-1 text-xs text-red-500">{fieldErrors.patient_gender[0]}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {fieldErrors.patient_gender[0]}
+                    </p>
                   )}
                 </div>
               </div>
@@ -414,7 +460,9 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
                 />
                 {fieldErrors.patient_email && (
-                  <p className="mt-1 text-xs text-red-500">{fieldErrors.patient_email[0]}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {fieldErrors.patient_email[0]}
+                  </p>
                 )}
               </div>
 
@@ -431,7 +479,9 @@ function BookingFormModal({ doctorSlug, date, time, onClose }: BookingFormModalP
               </div>
 
               {fieldErrors.appointment_time && (
-                <p className="text-xs text-red-500">{fieldErrors.appointment_time[0]}</p>
+                <p className="text-xs text-red-500">
+                  {fieldErrors.appointment_time[0]}
+                </p>
               )}
 
               <button

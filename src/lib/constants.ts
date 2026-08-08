@@ -24,10 +24,31 @@ export const HEALTH_MENU_ITEMS = [
   },
 ];
 
+// export const HELP_LINKS: FooterLink[] = [
+//   { id: "secure", label: "Secure Checkout", href: "/secure-checkout", icon: "🔒" },
+//   { id: "terms", label: "Terms and Condition", href: "/terms", icon: "📃" },
+//   { id: "privacy", label: "Privacy policy", href: "/privacy", icon: "🛡️" },
+// ];
+
 export const HELP_LINKS: FooterLink[] = [
-  { id: "secure", label: "Secure Checkout", href: "/secure-checkout", icon: "🔒" },
-  { id: "terms", label: "Terms and Condition", href: "/terms", icon: "📃" },
-  { id: "privacy", label: "Privacy policy", href: "/privacy", icon: "🛡️" },
+  {
+    id: "help",
+    label: "Help Center",
+    href: "/contact",
+    icon: "📲", // existing icon
+  },
+  {
+    id: "terms",
+    label: "Terms & Conditions",
+    href: "/terms-and-conditions",
+    icon: "📜", // existing image
+  },
+  {
+    id: "privacy",
+    label: "Privacy Policy",
+    href: "/privacy-policy",
+    icon: "🔒", // existing image
+  },
 ];
 
 export const COMPANY_LINKS: CompanyInfo[] = [

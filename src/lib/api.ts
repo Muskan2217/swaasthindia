@@ -247,13 +247,15 @@ export class AppointmentValidationError extends Error {
 
 export async function createAppointment(
   payload: CreateAppointmentPayload,
+  token: string,
 ): Promise<AppointmentResult> {
   const res = await fetch(`${API_URL}/appointments`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
+   headers: {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  Authorization: `Bearer ${token}`,
+},
     body: JSON.stringify({
       doctor_slug: payload.doctorSlug,
       patient_name: payload.patientName,
@@ -488,4 +490,294 @@ export async function getDoctorRecentPatients(token: string): Promise<RecentPati
   if (!res.ok) throw json;
 
   return json.data;
+}
+
+// ---------------------------------------------------------------------------
+// Patient Dashboard
+// ---------------------------------------------------------------------------
+
+export async function getPatientDashboardProfile(token: string) {
+  const res = await fetch(`${API_URL}/patient/dashboard/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json.data;
+}
+
+export async function getPatientDashboardStats(token: string) {
+  const res = await fetch(`${API_URL}/patient/dashboard/stats`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json.data;
+}
+
+export async function getPatientNextAppointment(token: string) {
+  const res = await fetch(`${API_URL}/patient/dashboard/next-appointment`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json.data;
+}
+
+export async function getPatientAppointments(token: string) {
+  const res = await fetch(`${API_URL}/patient/dashboard/appointments`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json.data;
+}
+
+// export async function getPatientAppointmentHistory(token: string) {
+//  const res = await fetch(`${API_URL}/patient/dashboard/appointments`, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//       Accept: "application/json",
+//     },
+//     cache: "no-store",
+//   });
+
+//   const json = await res.json();
+//   if (!res.ok) throw json;
+
+//   return json.data;
+// }
+
+// Fetches patient profile details from the API using authentication token
+
+export async function getPatientProfile(
+  id: string | number,
+  token: string
+) {
+  const res = await fetch(`${API_URL}/patient/dashboard/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json.message || "Failed to fetch patient profile");
+  }
+
+  return json.data;
+}
+
+
+// Updates the authenticated patient's profile details.
+
+export async function updatePatientProfile(
+  token: string,
+  data: {
+    name?: string;
+    mobile?: string;
+    age?: number | null;
+    gender?: string | null;
+    height?: number | null;
+    weight?: number | null;
+    blood_group?: string | null;
+    allergies?: string | null;
+    medical_conditions?: string | null;
+    current_medications?: string | null;
+    emergency_contact_name?: string | null;
+    emergency_contact_phone?: string | null;
+    address?: string | null;
+    city?: string | null;
+    state?: string | null;
+    pincode?: string | null;
+    profile_image?: File | null;
+  }
+) {
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (value instanceof File) {
+      formData.append(key, value);
+    } else {
+      formData.append(key, String(value));
+    }
+  });
+
+  // Laravel method spoofing so we can upload a file
+
+const res = await fetch(`${API_URL}/patient/profile`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+  },
+  body: formData,
+  cache: "no-store",
+});
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      json.message || "Failed to update patient profile"
+    );
+  }
+
+  return json.data;
+}
+
+
+
+// ---------------------------------------------------------------------------
+// Doctor Dashboard — Weekly Schedule
+// ---------------------------------------------------------------------------
+
+export interface DayScheduleData {
+  day: string;
+  isOff: boolean;
+  startTime: string | null;
+  endTime: string | null;
+}
+
+export async function getDoctorSchedule(token: string): Promise<DayScheduleData[]> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/schedule`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+
+  return json.data;
+}
+
+export async function updateDoctorSchedule(
+  token: string,
+  schedule: DayScheduleData[]
+): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/schedule`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ schedule }),
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+// ---------------------------------------------------------------------------
+// Doctor Dashboard — Live Queue & Current Patient
+// ---------------------------------------------------------------------------
+
+export interface QueuePatientData {
+  id: string;
+  name: string;
+  reason: string;
+  status: "in-room" | "waiting";
+  statusLabel: string;
+  avatarUrl: string | null;
+}
+
+export interface CurrentPatientData {
+  id: string;
+  name: string;
+  age: number | null;
+  gender: string | null;
+  bloodGroup: string | null;
+  avatarUrl: string | null;
+  vitals: {
+    bp: string | null;
+    temperature: string | null;
+  };
+}
+
+export async function getDoctorQueue(token: string): Promise<QueuePatientData[]> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json.data;
+}
+
+export async function getCurrentPatient(token: string): Promise<CurrentPatientData | null> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/current-patient`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json.data;
+}
+
+export async function startConsultation(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue/${appointmentId}/start`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+export async function completeConsultation(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue/${appointmentId}/complete`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+export async function updateVitals(
+  token: string,
+  appointmentId: string,
+  vitals: { bp: string; temperature: string }
+): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue/${appointmentId}/vitals`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    body: JSON.stringify(vitals),
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
 }

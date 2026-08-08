@@ -82,15 +82,7 @@ if (result.user.role === "doctor") {
 }
   };
 
-  const continueAs = (role: UserRole) => {
-    // Quick-login with demo credentials
-    const creds: Record<UserRole, { id: string; pw: string }> = {
-      patient: { id: "patient@swaasth.in", pw: "patient123" },
-      doctor: { id: "doctor@swaasth.in", pw: "doctor123" },
-    };
-    const user = validateLogin(creds[role].id, creds[role].pw);
-    if (user) router.push(user.redirectTo);
-  };
+ 
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
@@ -184,35 +176,9 @@ if (result.user.role === "doctor") {
         )}
       </button>
 
-      {/* Divider */}
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400 font-medium">
-          or continue as
-        </span>
-        <div className="flex-1 h-px bg-gray-200" />
-      </div>
 
-      {/* Quick-login buttons */}
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => continueAs("patient")}
-          className="flex items-center justify-center gap-2 border-2 border-[#3864D5]/25 text-[#3864D5] font-semibold text-sm py-3 rounded-[14px] hover:bg-[#EEF2FF] hover:border-[#3864D5]/50 transition-all"
-        >
-          <User size={15} />
-          Patient
-        </button>
-        <button
-          type="button"
-          onClick={() => continueAs("doctor")}
-          className="flex items-center justify-center gap-2 border-2 border-[#3864D5]/25 text-[#3864D5] font-semibold text-sm py-3 rounded-[14px] hover:bg-[#EEF2FF] hover:border-[#3864D5]/50 transition-all"
-        >
-          <Stethoscope size={15} />
-          Doctor
-        </button>
-      </div>
 
+    
       {/* Create account */}
       <p className="text-center text-sm text-gray-500">
         Don&apos;t have an account?{" "}
@@ -224,18 +190,7 @@ if (result.user.role === "doctor") {
         </Link>
       </p>
 
-      {/* Demo hint */}
-      <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3">
-        <p className="text-xs text-[#3864D5] font-semibold mb-0.5">
-          Demo credentials
-        </p>
-        <p className="text-xs text-gray-600">
-          Patient: patient@swaasth.in / patient123
-        </p>
-        <p className="text-xs text-gray-600">
-          Doctor: doctor@swaasth.in / doctor123
-        </p>
-      </div>
+   
     </form>
   );
 }
