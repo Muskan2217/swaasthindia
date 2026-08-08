@@ -106,9 +106,11 @@ export default function PatientProfilePage() {
   useEffect(() => {
   if (!token || !id) return;
 
+  const authToken = token; // Local constant created for TS narrowing
+
   async function loadProfile() {
     try {
-      const data = await getPatientProfile(String(id), token);
+      const data = await getPatientProfile(String(id), authToken);
 
       setPatient(data);
 
@@ -127,10 +129,8 @@ export default function PatientProfilePage() {
         medical_conditions: data.medical_conditions ?? "",
         current_medications: data.current_medications ?? "",
 
-        emergency_contact_name:
-          data.emergency_contact_name ?? "",
-        emergency_contact_phone:
-          data.emergency_contact_phone ?? "",
+        emergency_contact_name: data.emergency_contact_name ?? "",
+        emergency_contact_phone: data.emergency_contact_phone ?? "",
 
         address: data.address ?? "",
         city: data.city ?? "",
