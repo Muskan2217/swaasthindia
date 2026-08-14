@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Clock, Phone, ArrowRight } from "lucide-react";
 import { getDoctorUpcomingAppointments } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -23,10 +24,10 @@ export default function UpcomingAppointmentsTable() {
     <div className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-gray-800">Upcoming Appointments</h3>
-        <button className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-          View All
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <Link href="/appointments" className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+       View All
+  <ArrowRight className="w-3.5 h-3.5" />
+</Link>
       </div>
 
       {loading ? (

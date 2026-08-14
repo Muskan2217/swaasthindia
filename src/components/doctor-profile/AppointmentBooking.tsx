@@ -41,17 +41,23 @@ function buildDateSlots(days: number): DateSlot[] {
     const date = new Date();
     date.setDate(date.getDate() + i);
 
+    // Format YYYY-MM-DD according to LOCAL timezone (not UTC)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const dayNum = String(date.getDate()).padStart(2, "0");
+    const key = `${year}-${month}-${dayNum}`;
+
     const topLabel =
       i === 0 ? "Today" : i === 1 ? "Tomorrow" : weekdayFmt.format(date);
 
     return {
-      key: date.toISOString().slice(0, 10),
+      key,
       topLabel,
       day: dayFmt.format(date),
       weekday: weekdayFmt.format(date),
     };
   });
-}
+} 
 
 export default function AppointmentBooking({
   doctorSlug,

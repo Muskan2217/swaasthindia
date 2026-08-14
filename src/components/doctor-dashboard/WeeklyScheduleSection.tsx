@@ -1,4 +1,3 @@
-// src/components/doctor-dashboard/WeeklyScheduleSection.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -20,6 +19,15 @@ const DAY_COLORS: Record<string, string> = {
   Sun: "#EF4444",
 };
 
+// Clean Time Slots Dropdown options (08:00 AM to 10:00 PM)
+const TIME_SLOTS = [
+  "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+  "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM",
+  "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM",
+  "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",
+  "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM"
+];
+
 export default function WeeklyScheduleSection() {
   const { token } = useAuth();
   const [schedule, setSchedule] = useState<DayScheduleData[]>([]);
@@ -27,13 +35,22 @@ export default function WeeklyScheduleSection() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    if (!token) return;
-    getDoctorSchedule(token)
-      .then(setSchedule)
-      .catch(() => setSchedule([]))
-      .finally(() => setLoading(false));
-  }, [token]);
+useEffect(() => {
+  if (!token) return;
+  getDoctorSchedule(token)
+    .then((data) => {
+      // Fill in real defaults into state itself — not just the dropdown's
+      // display fallback — so an untouched day still saves a real value.
+      const normalized = data.map((d) => ({
+        ...d,
+        startTime: d.isOff ? null : (d.startTime ?? "09:00 AM"),
+        endTime: d.isOff ? null : (d.endTime ?? "05:00 PM"),
+      }));
+      setSchedule(normalized);
+    })
+    .catch(() => setSchedule([]))
+    .finally(() => setLoading(false));
+}, [token]);
 
   const updateDay = (day: string, patch: Partial<DayScheduleData>) => {
     setSchedule((prev) =>
@@ -85,14 +102,14 @@ export default function WeeklyScheduleSection() {
       </div>
 
       {saved && (
-        <p className="text-xs text-green-600 mb-3">Schedule saved successfully.</p>
+        <p className="text-xs text-green-600 mb-3 font-medium">Schedule saved successfully.</p>
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
         {schedule.map((d) => (
           <div
             key={d.day}
-            className="rounded-xl border border-gray-100 p-3 flex flex-col gap-2"
+            className="rounded-xl border border-gray-100 p-3 flex flex-col gap-2 bg-slate-50/50"
             style={{ borderTopColor: DAY_COLORS[d.day], borderTopWidth: 3 }}
           >
             <div className="flex items-center justify-between">
@@ -102,29 +119,44 @@ export default function WeeklyScheduleSection() {
                   type="checkbox"
                   checked={!d.isOff}
                   onChange={(e) => updateDay(d.day, { isOff: !e.target.checked })}
-                  className="w-3.5 h-3.5"
+                  className="w-3.5 h-3.5 accent-blue-600"
                 />
               </label>
             </div>
 
             {d.isOff ? (
-              <span className="text-xs font-medium text-red-500">Off</span>
+              <span className="text-xs font-semibold text-red-500 py-3 text-center">Off</span>
             ) : (
-              <div className="flex flex-col gap-1">
-                <input
-                  type="text"
-                  placeholder="Start (9:00 AM)"
-                  value={d.startTime ?? ""}
-                  onChange={(e) => updateDay(d.day, { startTime: e.target.value })}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-300"
-                />
-                <input
-                  type="text"
-                  placeholder="End (2:00 PM)"
-                  value={d.endTime ?? ""}
-                  onChange={(e) => updateDay(d.day, { endTime: e.target.value })}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-300"
-                />
+              <div className="flex flex-col gap-1.5 mt-1">
+                <div>
+                  <label className="text-[10px] text-gray-400 font-semibold uppercase block mb-0.5">Start</label>
+                  <select
+                    value={d.startTime ?? "09:00 AM"}
+                    onChange={(e) => updateDay(d.day, { startTime: e.target.value })}
+                    className="w-full text-xs bg-white border border-gray-200 rounded-md px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  >
+                    {TIME_SLOTS.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] text-gray-400 font-semibold uppercase block mb-0.5">End</label>
+                  <select
+                    value={d.endTime ?? "05:00 PM"}
+                    onChange={(e) => updateDay(d.day, { endTime: e.target.value })}
+                    className="w-full text-xs bg-white border border-gray-200 rounded-md px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  >
+                    {TIME_SLOTS.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Avatar from "./Avatar";
 import { useAuth } from "@/context/AuthContext";
@@ -28,49 +29,53 @@ export default function RecentPatientsTable() {
   }, [token]);
 
   return (
-    <div className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 h-full">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-gray-800">Recent Patients</h3>
-        <button className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-          View All
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-50" />
-          ))}
-        </div>
-      ) : patients.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-6">No recent patients yet.</p>
-      ) : (
-        <div className="space-y-1">
-          {patients.map((patient) => (
-            <div
-              key={patient.id}
-              className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0"
-            >
-              <Avatar name={patient.name} avatarUrl={patient.avatarUrl} size="sm" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate">{patient.name}</p>
-                <p className="text-xs text-gray-400">
-                  {/* age/gender show only if present — older appointments booked
-                      before these fields existed will have null here */}
-                  {patient.age ? `${patient.age} Yr` : "—"}
-                  {patient.gender ? ` • ${patient.gender}` : ""} • {patient.time}
-                </p>
-              </div>
-              <span
-                className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0 ${statusStyles[patient.status]}`}
-              >
-                {patient.status}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 h-full">
+  {loading ? (
+    <div className="space-y-2">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-50" />
+      ))}
     </div>
+  ) : patients.length === 0 ? (
+    <p className="text-sm text-gray-400 text-center py-6">
+      No recent patients yet.
+    </p>
+  ) : (
+    <div className="space-y-1 max-h-[380px] overflow-y-auto pr-1">
+      {patients.map((patient) => (
+        <div
+          key={patient.id}
+          className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0"
+        >
+          <Avatar
+            name={patient.name}
+            avatarUrl={patient.avatarUrl}
+            size="sm"
+          />
+
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-800 truncate">
+              {patient.name}
+            </p>
+
+            <p className="text-xs text-gray-400">
+              {patient.age ? `${patient.age} Yr` : "—"}
+              {patient.gender ? ` • ${patient.gender}` : ""} •{" "}
+              {patient.time}
+            </p>
+          </div>
+
+          <span
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0 ${
+              statusStyles[patient.status]
+            }`}
+          >
+            {patient.status}
+          </span>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
   );
 }

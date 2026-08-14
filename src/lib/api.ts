@@ -720,6 +720,9 @@ export interface CurrentPatientData {
   gender: string | null;
   bloodGroup: string | null;
   avatarUrl: string | null;
+  appointmentDate: string;
+  appointmentTime: string;
+  reason: string | null;
   vitals: {
     bp: string | null;
     temperature: string | null;
@@ -780,4 +783,160 @@ export async function updateVitals(
   });
   const json = await res.json();
   if (!res.ok) throw json;
+}
+
+// ---------------------------------------------------------------------------
+// Doctor Dashboard — Pending Appointment Approvals
+// ---------------------------------------------------------------------------
+
+export interface PendingAppointmentData {
+  id: string;
+  patientName: string;
+  age: number | null;
+  gender: string | null;
+  phone: string;
+  email: string | null;
+  date: string;
+  time: string;
+  notes: string | null;
+}
+
+export async function getPendingAppointments(token: string): Promise<PendingAppointmentData[]> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/pending-appointments`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json.data;
+}
+
+export async function approveAppointment(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/appointments/${appointmentId}/approve`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+export async function declineAppointment(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/appointments/${appointmentId}/decline`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+// ---------------------------------------------------------------------------
+// Full Appointments Page — Doctor list + shared Cancel action
+// ---------------------------------------------------------------------------
+
+export interface DoctorAppointmentData {
+  id: string;
+  patientName: string;
+  age: number | null;
+  gender: string | null;
+  phone: string;
+  date: string;
+  time: string;
+  status: string;
+  notes: string | null;
+}
+
+export async function getDoctorAllAppointments(
+  token: string,
+  filters: { status?: string; search?: string } = {}
+): Promise<DoctorAppointmentData[]> {
+  const params = new URLSearchParams();
+  if (filters.status) params.set("status", filters.status);
+  if (filters.search) params.set("search", filters.search);
+
+  const res = await fetch(`${API_URL}/doctor/appointments?${params}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json.data;
+}
+
+export async function cancelAppointment(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/appointments/${appointmentId}/cancel`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+// ---------------------------------------------------------------------------
+// Doctor: Create Appointment (walk-in / manual)
+// ---------------------------------------------------------------------------
+
+export interface CreateDoctorAppointmentPayload {
+  patientName: string;
+  patientPhone: string;
+  patientEmail?: string;
+  patientAge: number;
+  patientGender: "Male" | "Female" | "Other";
+  appointmentDate: string;
+  appointmentTime: string;
+  notes?: string;
+}
+
+export async function createAppointmentByDoctor(
+  token: string,
+  payload: CreateDoctorAppointmentPayload
+): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/appointments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      patient_name: payload.patientName,
+      patient_phone: payload.patientPhone,
+      patient_email: payload.patientEmail || null,
+      patient_age: payload.patientAge,
+      patient_gender: payload.patientGender,
+      appointment_date: payload.appointmentDate,
+      appointment_time: payload.appointmentTime,
+      notes: payload.notes || null,
+    }),
+  });
+
+  const json = await res.json();
+  if (res.status === 422) {
+    throw new AppointmentValidationError(json.message ?? "Validation failed", json.errors ?? {});
+  }
+  if (!res.ok) throw json;
+}
+
+
+// ---------------------------------------------------------------------------
+// Patient — Live OPD Queue Status
+// ---------------------------------------------------------------------------
+
+export interface LiveQueueStatus {
+  has_live_queue: boolean;
+  doctor_name?: string;
+  your_token?: number;
+  current_serving_token?: number;
+  patients_ahead?: number;
+  estimated_wait_minutes?: number;
+  is_your_turn?: boolean;
+}
+
+export async function getLiveQueueStatus(token: string): Promise<LiveQueueStatus> {
+  const res = await fetch(`${API_URL}/patient/dashboard/live-queue`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json.data;
 }

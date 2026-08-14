@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import LiveQueueCard from "@/components/patient-dashboard/LiveQueueCard";
 import {
   getPatientDashboardProfile,
   getPatientDashboardStats,
@@ -24,8 +25,12 @@ import {
   Stethoscope,
   FlaskConical,
   ChevronRight,
+  ChevronLeft, 
+  MapPin,       
   CalendarPlus,
 } from "lucide-react";
+
+
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL!.replace("/api", "");
 // ---------------------------------------------------------------------------
@@ -146,6 +151,7 @@ export default function PatientDashboard() {
     useState<AppointmentHistoryItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
+  const [currentApptIndex, setCurrentApptIndex] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -215,6 +221,18 @@ export default function PatientDashboard() {
 
   const visibleList = tab === "upcoming" ? upcoming : past;
 
+  const currentAppt = upcoming[currentApptIndex] ?? null;
+
+const handlePrev = () => {
+  if (upcoming.length === 0) return;
+  setCurrentApptIndex((prev) => (prev > 0 ? prev - 1 : upcoming.length - 1));
+};
+
+const handleNext = () => {
+  if (upcoming.length === 0) return;
+  setCurrentApptIndex((prev) => (prev < upcoming.length - 1 ? prev + 1 : 0));
+};
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -232,6 +250,10 @@ export default function PatientDashboard() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6">
+
+{/*  Live Queue Card */}
+  <LiveQueueCard />
+
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
@@ -264,113 +286,182 @@ export default function PatientDashboard() {
           />
         </div>
 
-        {/* Welcome + Next Appointment */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={profile?.profile_image ?? "https://i.pravatar.cc/300"}
-              alt={profile?.name ?? "Patient"}
-              className="h-20 w-20 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0"
-            />
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold text-gray-900">
-                <b>Welcome back, </b>{profile?.name?.split(" ")[0] ?? user?.name} 👋
-              </h1>
-              {profile?.patient_code && (
-                <p className="text-sm text-gray-500 mt-0.5">
-                  Patient ID:{" "}
-                  <span className="text-blue-600 font-medium">
-                    {profile.patient_code}
-                  </span>
-                </p>
+{/* =========================================================
+    1H PATIENT WELCOME CARD 
+   ========================================================= */}
+<div className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-xs md:p-6">
+  <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img
+      src={profile?.profile_image ?? "https://i.pravatar.cc/300"}
+      alt={profile?.name ?? "Patient"}
+      className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-slate-100 shadow-xs md:h-20 md:w-20"
+    />
+    <div className="min-w-0 flex-1">
+      <h1 className="text-lg font-bold text-gray-900 md:text-xl">
+        Welcome back, {profile?.name?.split(" ")[0] ?? user?.name} 👋
+      </h1>
+      {profile?.patient_code && (
+        <p className="mt-0.5 text-sm font-medium text-gray-500">
+          Patient ID:{" "}
+          <span className="font-semibold text-blue-600">
+            {profile.patient_code}
+          </span>
+        </p>
+      )}
+      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-600 md:text-sm">
+        <span className="flex items-center gap-1.5">
+          <UserIcon className="h-4 w-4 text-gray-400" />
+          Age {profile?.age ?? "—"}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Droplet className="h-4 w-4 text-red-400" />
+          {profile?.blood_group ?? "—"}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Phone className="h-4 w-4 text-gray-400" />
+          {profile?.mobile ?? "—"}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* =========================================================
+    2. HORIZONTAL APPOINTMENT CARD (DOCTOR DETAILS + SCROLLER)
+   ========================================================= */}
+<div className="w-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xs">
+  <div className="grid grid-cols-1 divide-y divide-gray-100 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+    
+    {/* LEFT HALF: APPOINTMENT WITH (DOCTOR DETAILS) */}
+    <div className="flex flex-col justify-between space-y-4 p-5 md:p-6">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+          Appointment With
+        </span>
+        {nextAppointment?.status && (
+          <StatusBadge status={nextAppointment.status} />
+        )}
+      </div>
+
+      {nextAppointment?.doctor ? (
+        <div className="flex items-start gap-4 sm:items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={
+              nextAppointment.doctor.profile_image
+                ? `${BACKEND_URL}/storage/${nextAppointment.doctor.profile_image}`
+                : "https://i.pravatar.cc/300"
+            }
+            alt={nextAppointment.doctor.name}
+            className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-blue-50 sm:h-16 sm:w-16"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate text-base font-bold text-gray-900">
+                Dr. {nextAppointment.doctor.name}
+              </h3>
+              
+              {/* Safe check for experience property */}
+              {"experience" in nextAppointment.doctor && (
+                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-600">
+                  {(nextAppointment.doctor as Record<string, any>).experience}
+                </span>
               )}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm text-gray-600">
-                <span className="flex items-center gap-1.5">
-                  <UserIcon className="w-3.5 h-3.5 text-gray-400" />
-                  Age {profile?.age ?? "—"}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Droplet className="w-3.5 h-3.5 text-gray-400" />
-                  {profile?.blood_group ?? "—"}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-gray-400" />
-                  {profile?.mobile ?? "—"}
-                </span>
-              </div>
             </div>
-          </div>
-
-          <div className="bg-blue-50 rounded-2xl p-5">
-            <h2 className="text-sm font-semibold text-gray-700 mb-3">
-              Next Appointment
-            </h2>
-            {nextAppointment ? (
-              <>
-                <div className="flex items-center gap-3 mb-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-
-                  <img
-                    src={
-                      nextAppointment.doctor.profile_image
-                        ? `${BACKEND_URL}/storage/${nextAppointment.doctor.profile_image}`
-                        : "https://i.pravatar.cc/300"
-                    }
-                    alt={nextAppointment.doctor.name}
-                    className="h-11 w-11 rounded-full object-cover ring-1 ring-white shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {nextAppointment.doctor.name}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {nextAppointment.doctor.specialization}
-                      <StatusBadge status={nextAppointment.status} />
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {new Date(
-                      nextAppointment.appointment_date,
-                    ).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {nextAppointment.appointment_time.slice(0, 8).includes(":")
-                      ? nextAppointment.appointment_time
-                      : nextAppointment.appointment_time}
-                  </span>
-                </div>
-                <Link
-                  href={`/doctor-profile/${nextAppointment.doctor.slug}`}
-                  className="block w-full text-center rounded-lg bg-blue-600 text-white text-sm font-semibold py-2.5 hover:bg-blue-700 transition-colors"
-                >
-                  View Appointment
-                </Link>
-              </>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-sm text-gray-500 mb-3">
-                  No upcoming appointments
-                </p>
-                <Link
-                  href="/doctor-listing"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 hover:bg-blue-700 transition-colors"
-                >
-                  <CalendarPlus className="w-4 h-4" />
-                  Book Appointment
-                </Link>
-              </div>
-            )}
+            
+            <p className="mt-0.5 truncate text-xs font-medium text-gray-500">
+              {nextAppointment.doctor.specialization ?? "General Physician"}
+            </p>
+            
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-blue-600">
+              <MapPin className="h-3.5 w-3.5 text-blue-600" />
+              <span>
+                Location:{" "}
+                <strong className="text-gray-700">
+                  {"location" in nextAppointment.doctor
+                    ? (nextAppointment.doctor as Record<string, any>).location
+                    : "Etawah"}
+                </strong>
+              </span>
+            </p>
           </div>
         </div>
+      ) : (
+        <div className="py-2 text-sm text-gray-500">
+          No active doctor assigned.
+        </div>
+      )}
+    </div>
+
+    {/* RIGHT HALF: NEXT APPOINTMENT SCROLLER */}
+<div className="flex flex-col justify-between space-y-4 bg-slate-50/50 p-5 md:p-6">
+  <div className="flex items-center justify-between">
+    <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+      Next Appointment
+    </span>
+
+    {/* Carousel Navigation Arrows */}
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        onClick={handlePrev}
+        className="rounded-lg border border-gray-200 bg-white p-1.5 text-gray-600 transition shadow-2xs hover:bg-gray-50 active:scale-95"
+        aria-label="Previous Appointment"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={handleNext}
+        className="rounded-lg border border-gray-200 bg-white p-1.5 text-gray-600 transition shadow-2xs hover:bg-gray-50 active:scale-95"
+        aria-label="Next Appointment"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  </div>
+
+  {currentAppt ? (
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+        <Calendar className="h-5 w-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-bold text-gray-900">
+          {new Date(currentAppt.appointment_date).toLocaleDateString(
+            "en-IN",
+            {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            }
+          )}{" "}
+          <span className="mx-0.5 text-gray-400 sm:mx-1">•</span>{" "}
+          {currentAppt.appointment_time}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-gray-500">
+          Follow-up Consultation
+        </p>
+      </div>
+    </div>
+  ) : (
+    <div className="flex items-center justify-between">
+      <p className="text-sm text-gray-500">No upcoming appointments</p>
+      <Link
+        href="/doctor-listing"
+        className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
+      >
+        <CalendarPlus className="h-3.5 w-3.5" />
+        Book Now
+      </Link>
+    </div>
+  )}
+</div>
+
+  </div>
+</div>
+
 
         {/* My Appointments + Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
@@ -429,8 +520,8 @@ export default function PatientDashboard() {
                 icon={<Calendar className="w-4 h-4" />}
                 iconBg="#DBEAFE"
                 iconColor="#2563EB"
-                title="Find & Book Doctor"
-                subtitle="Schedule an appointment"
+                title="Book an Appointment"
+                subtitle="Doctors, Just a click away."
                 href="/doctor-listing"
               />
 
