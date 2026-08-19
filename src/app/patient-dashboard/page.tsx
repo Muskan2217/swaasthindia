@@ -32,7 +32,8 @@ import {
 
 
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL!.replace("/api", "");
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || "";
+const BACKEND_URL = rawUrl.replace("/api", "");
 // ---------------------------------------------------------------------------
 // Types — match the backend contracts exactly
 // ---------------------------------------------------------------------------
