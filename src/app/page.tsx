@@ -16,8 +16,9 @@ export default function HomePage() {
         <PharmacyCategories />
         <QuickActionsSection />
         <DoctorPatientSection />
-        <Footer />
+      
       </main>
+        <Footer />
     </div>
   );
 }

@@ -174,9 +174,8 @@ export default function DoctorDashboardPage() {
           <UpcomingAppointmentsTable />
           <RecentPatientsTable />
         </div>
-
-        <Footer />
       </main>
+      <Footer />
     </div>
   );
 }

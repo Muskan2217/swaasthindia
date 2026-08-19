@@ -4,245 +4,202 @@ import Link from "next/link";
 import Image from "next/image";
 import { HELP_LINKS, COMPANY_LINKS } from "@/lib/constants";
 
-const helpIconMap: Record<string, React.ReactNode> = {
-  secure: (
-    <svg
-      className="w-4 h-4 text-[#1A3FA4]"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-      />
-    </svg>
-  ),
-  terms: (
-    <svg
-      className="w-4 h-4 text-[#1A3FA4]"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
-  ),
-  privacy: (
-    <svg
-      className="w-4 h-4 text-[#1A3FA4]"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-      />
-    </svg>
-  ),
-};
-
 export default function Footer() {
+  const quickLinks = COMPANY_LINKS?.filter(
+    (item) =>
+      !["Verified Doctor", "Careers", "Certificate"].includes(item.label)
+  );
+
   return (
-    <footer className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 w-full">
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        {/* Help and Support Card */}
-        <div className="bg-[#F4F8FF] rounded-2xl p-6 border border-[#E0EDFF] shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10  flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 text-[#1A3FA4]"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 12a9 9 0 0118 0v7a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4a2 2 0 012-2h4M3 12v7a2 2 0 002 2h2a2 2 0 002-2v-4a2 2 0 00-2-2H3z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-text-primary">
-                Help and Support
-              </h3>
-            </div>
+    <footer className="w-full bg-white shadow-sm border-t border-[#E0EDFF] mt-8">
+      {/* <div className="w-full"> */}
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 py-6 lg:py-8">
 
-            <div className="grid grid-cols-5 gap-2 items-center">
-              <div className="col-span-3 space-y-3">
-                {HELP_LINKS?.map((link) => {
-                  const isFilePath =
-                    link.icon?.startsWith("/") || link.icon?.includes(".");
-                  return (
-                    <Link
-                      key={link.id}
-                      href={link.href}
-                      className="flex items-center gap-3 group w-max"
-                    >
-                      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm shadow-sm">
-                        {link.icon &&
-                          (isFilePath ? (
-                            <div className="w-6 h-6 relative">
-                              <Image
-                                src={link.icon}
-                                alt={link.label}
-                                fill
-                                className="object-contain"
-                              />
-                            </div>
-                          ) : (
-                            <span>{link.icon}</span>
-                          ))}
-                      </div>
-                      <span className="text-sm sm:text-lg text-gray-600 group-hover:text-[#1A3FA4] transition-colors font-medium whitespace-nowrap">
-                        {link.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              <div className="col-span-2 relative w-full aspect-square min-w-[120px] max-w-[200px] justify-self-start -ml-2 overflow-visible">
-                <Image
-                  src="/home/shield.png"
-                  alt="Shield"
-                  fill
-                  className="object-contain scale-110 origin-left"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
+    <div className="lg:pr-6">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-8 h-8 relative flex-shrink-0">
+          <Image
+            src="/site-logo.png"
+            alt="Swaasth India"
+            fill
+            className="object-contain"
+          />
         </div>
 
-        {/* Swaasth India Info Card */}
-        <div className="bg-[#FFF8F4] rounded-2xl p-6 border border-[#FFEADA] shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 relative flex-shrink-0">
-                <svg
-                  viewBox="0 0 36 36"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-9 h-9"
-                >
-                  <path
-                    d="M18 29s-11-7.5-11-15A7 7 0 0118 9a7 7 0 0111 5c0 7.5-11 15-11 15z"
-                    fill="none"
-                    stroke="#E8192C"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M15 17h6M18 14v6"
-                    stroke="#1A3FA4"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-text-primary">
-                Swaasth <span className="text-[#E8192C]">India</span>
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-5 gap-2 items-center">
-              <div className="col-span-3 space-y-3">
-                {COMPANY_LINKS?.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className="flex items-center gap-3 group w-max"
-                  >
-                    <div className="w-5 h-5 bg-[#E8192C] rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-3 h-3 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-sm  sm:text-lg text-gray-600 group-hover:text-[#1A3FA4] transition-colors font-medium whitespace-nowrap">
-                      {item.label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-
-              <div className="col-span-2 relative w-full aspect-square min-w-[120px] max-w-[200px] justify-self-start -ml-2 overflow-visible">
-                <Image
-                  src="/home/notepad.png"
-                  alt="Notepad"
-                  fill
-                  className="object-contain scale-110 origin-left"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <h3 className="text-xl sm:text-2xl font-bold text-[#10285F]">
+          Swaasth <span className="text-[#E8192C]">India</span>
+        </h3>
       </div>
 
-      {/* Premium Clean & Unified Gradient Bottom Panel */}
-      <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-[#0D1B3E] via-[#152A5B] to-[#1A3FA4] text-white p-6 shadow-md">
-        {/* Social Icons with Smooth Transitions */}
-        <div className="flex justify-center items-center gap-5 mb-4">
-          <Link
-            href="https://www.instagram.com/swaasthindia?igsh=ODYzOTlzcTg3ODV4"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E8192C] flex items-center justify-center transition-all duration-200 transform hover:scale-105 text-sm font-semibold"
-          >
-            i
-          </Link>
-          <Link
-            href="https://x.com/swaasthindiamed"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E8192C] flex items-center justify-center transition-all duration-200 transform hover:scale-105 text-sm font-semibold"
-          >
-            x
-          </Link>
-          <Link
-            href="mailto:swaasthindiasupport@gmail.com"
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E8192C] flex items-center justify-center transition-all duration-200 transform hover:scale-105 text-sm font-semibold"
-          >
-            m
-          </Link>
-        </div>
+      <p className="text-xs sm:text-sm text-gray-600 leading-5 max-w-sm">
+        Better healthcare through trusted doctors, easy appointments
+        and reliable support.
+      </p>
+    </div>
 
-        {/* Unified Label & Copyright Info */}
-        <div className="text-center space-y-1">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-bold tracking-widest text-white/90 uppercase">
-            <span className="text-[#E8192C] animate-pulse">❤️</span>
-            <span>Health is Love</span>
-            <span className="text-[#E8192C] animate-pulse">❤️</span>
-          </div>
-          <p className="text-[11px] text-white/60 tracking-wide">
-            © {new Date().getFullYear()} Swaasth India. All rights reserved.
-          </p>
-        </div>
+    <div>
+      <h4 className="text-base font-bold text-[#1A3FA4] mb-2">
+        Quick Links
+      </h4>
+
+      <div className="w-8 h-[2px] bg-[#E8192C] mb-3" />
+
+      <div className="space-y-1.5">
+        {quickLinks?.map((item) => (
+          <Link
+            key={item.id}
+            href={item.href}
+            className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+          >
+            <span className="text-[#1A3FA4] text-base leading-none">›</span>
+            {item.label}
+          </Link>
+        ))}
+
+        {HELP_LINKS?.map((item) => (
+          <Link
+            key={item.id}
+            href={item.href}
+            className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+          >
+            <span className="text-[#1A3FA4] text-base leading-none">›</span>
+            {item.label}
+          </Link>
+        ))}
       </div>
+    </div>
+
+    <div>
+      <h4 className="text-base font-bold text-[#1A3FA4] mb-2">
+        For Patients
+      </h4>
+
+      <div className="w-8 h-[2px] bg-[#E8192C] mb-3" />
+
+      <div className="space-y-1.5">
+        <Link
+          href="/doctor-listing"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Doctors
+        </Link>
+
+        <Link
+          href="/lab-tests"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Lab Tests
+        </Link>
+
+        <Link
+          href="/appointments"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Appointments
+        </Link>
+
+        <Link
+          href="/patient-dashboard"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Patient Dashboard
+        </Link>
+      </div>
+    </div>
+
+    <div>
+      <h4 className="text-base font-bold text-[#1A3FA4] mb-2">
+        For Doctors
+      </h4>
+
+      <div className="w-8 h-[2px] bg-[#E8192C] mb-3" />
+
+      <div className="space-y-1.5">
+        <Link
+          href="/login"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Doctor Login
+        </Link>
+
+        <Link
+          href="/doctor-dashboard"
+          className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-[#1A3FA4] transition-colors"
+        >
+          <span className="text-[#1A3FA4] text-base leading-none">›</span>
+          Doctor Dashboard
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div className="w-full border-t border-[#E5EAF3]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3 text-center">
+                <p className="text-xs sm:text-sm text-gray-500">
+                  © {new Date().getFullYear()} Swaasth India. All rights reserved.
+                </p>
+
+                <span className="hidden sm:block text-gray-300">|</span>
+
+                <div className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-[#10285F] uppercase">
+                  <span className="text-[#E8192C]">❤️</span>
+                  <span>Health is Love</span>
+                  <span className="text-[#E8192C]">❤️</span>
+                </div>
+              </div>
+
+                <div className="flex items-center gap-3">
+  {/* Instagram */}
+  <Link
+    href="https://www.instagram.com/swaasthindia?igsh=ODYzOTlzcTg3ODV4"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-9 h-9 rounded-full bg-[#1A3FA4] text-white flex items-center justify-center hover:bg-red-700  transition-all"
+    aria-label="Instagram"
+  >
+    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+    </svg>
+  </Link>
+
+  {/* X (Twitter) */}
+  <Link
+    href="https://x.com/swaasthindiamed"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-9 h-9 rounded-full bg-[#1A3FA4] text-white flex items-center justify-center hover:bg-red-700  transition-all"
+    aria-label="X (Twitter)"
+  >
+    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  </Link>
+
+  {/* Email */}
+  <Link
+    href="mailto:swaasthindiasupport@gmail.com"
+    className="w-9 h-9 rounded-full bg-[#1A3FA4] text-white flex items-center justify-center hover:bg-red-700 transition-all"
+    aria-label="Email"
+  >
+    <svg className="w-4 h-4 fill-none stroke-current stroke-2 stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  </Link>
+</div>
+            </div>
+          </div>
+        </div>
+      {/* </div> */}
     </footer>
   );
 }
