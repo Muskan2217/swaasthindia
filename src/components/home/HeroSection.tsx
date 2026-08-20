@@ -27,7 +27,7 @@ export default function HeroSection() {
           {/* CTA Row */}
           <div className="mt-3 mb-3 flex flex-wrap items-center gap-4">
             <Link
-              href="/consult"
+              href="/doctor-listing"
               className="inline-flex items-center gap-2 sm:gap-3 bg-[#E8192C] hover:bg-red-700 text-white font-semibold text-sm sm:text-base px-4 py-2.5 sm:px-7 sm:py-3.5 rounded-lg transition-all duration-200 shadow-lg shadow-red-200 hover:shadow-red-300 hover:scale-105 active:scale-100"
             >
               Consult Now

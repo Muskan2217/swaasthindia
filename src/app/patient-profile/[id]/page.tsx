@@ -414,11 +414,6 @@ export default function PatientProfilePage() {
               </div>
             </div>
 
-            <SidebarLink
-              href="/patient-dashboard"
-              icon="⚙"
-              label="Settings"
-            />
 
           </nav>
 
@@ -474,16 +469,6 @@ export default function PatientProfilePage() {
 
             <div className="hidden items-center gap-4 sm:flex">
 
-              <button
-                type="button"
-                className="relative rounded-full p-2 text-slate-500 hover:bg-slate-50"
-              >
-                <span className="text-xl">♧</span>
-
-                <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">
-                  3
-                </span>
-              </button>
 
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 overflow-hidden rounded-full bg-blue-100">

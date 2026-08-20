@@ -166,7 +166,7 @@ export default function DoctorFilters({
       </div>
 
       {/* Request Callback card */}
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
+      {/* <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
         <p className="text-sm font-semibold text-blue-700">
           Can&apos;t find your doctor?
         </p>
@@ -181,7 +181,7 @@ export default function DoctorFilters({
           <PhoneCall className="h-4 w-4" />
           Request Callback
         </button>
-      </div>
+      </div> */}
     </aside>
   );
 }

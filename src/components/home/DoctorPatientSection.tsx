@@ -56,7 +56,7 @@ export default function DoctorPatientSection() {
             </p>
 
             <Link
-              href="/find-doctors"
+              href="/doctor-listing"
               className="inline-flex items-center gap-3 bg-brand-red hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105"
             >
               Find Doctors
