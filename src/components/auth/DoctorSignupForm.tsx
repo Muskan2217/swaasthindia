@@ -402,7 +402,7 @@ export default function DoctorSignupForm() {
           />
           <span className="text-sm">
             I accept the{" "}
-            <Link href="/terms" className="text-[#3864D5] font-semibold">
+            <Link href="/terms-and-conditions" className="text-[#3864D5] font-semibold">
               Terms & Conditions
             </Link>
           </span>

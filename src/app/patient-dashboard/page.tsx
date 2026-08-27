@@ -34,6 +34,18 @@ import {
 
 const rawUrl = process.env.NEXT_PUBLIC_API_URL || "";
 const BACKEND_URL = rawUrl.replace("/api", "");
+
+// Builds a safe, absolute image URL whether the backend sent a full URL
+// (e.g. from Storage::disk('public')->url()) or just a relative storage
+// path. Works the same way on localhost and on the live production
+// domain, since BACKEND_URL always comes from the current environment's
+// NEXT_PUBLIC_API_URL instead of being hardcoded.
+function resolveImageUrl(path: string | null | undefined): string {
+  if (!path) return "https://i.pravatar.cc/300";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BACKEND_URL}/storage/${path}`;
+}
+
 // ---------------------------------------------------------------------------
 // Types — match the backend contracts exactly
 // ---------------------------------------------------------------------------
@@ -96,11 +108,7 @@ function AppointmentRow({ appt }: { appt: AppointmentHistoryItem }) {
     <div className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={
-          appt.doctor.profile_image
-            ? `${BACKEND_URL}/storage/${appt.doctor.profile_image}`
-            : "https://i.pravatar.cc/300"
-        }
+        src={resolveImageUrl(appt.doctor.profile_image)}
         alt={appt.doctor.name}
         className="h-10 w-10 rounded-full object-cover ring-1 ring-slate-100 shrink-0"
       />
@@ -294,7 +302,7 @@ const handleNext = () => {
   <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img
-      src={profile?.profile_image ?? "https://i.pravatar.cc/300"}
+      src={resolveImageUrl(profile?.profile_image)}
       alt={profile?.name ?? "Patient"}
       className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-slate-100 shadow-xs md:h-20 md:w-20"
     />
@@ -349,11 +357,7 @@ const handleNext = () => {
         <div className="flex items-start gap-4 sm:items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={
-              nextAppointment.doctor.profile_image
-                ? `${BACKEND_URL}/storage/${nextAppointment.doctor.profile_image}`
-                : "https://i.pravatar.cc/300"
-            }
+            src={resolveImageUrl(nextAppointment.doctor.profile_image)}
             alt={nextAppointment.doctor.name}
             className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-blue-50 sm:h-16 sm:w-16"
           />

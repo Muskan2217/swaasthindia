@@ -11,31 +11,20 @@ import DoctorFilters, {
 } from "@/components/doctors/DoctorFilters";
 import DoctorList, { type SortOption } from "@/components/doctors/DoctorList";
 import Pagination from "@/components/doctors/Pagination";
-import { getDoctors } from "@/lib/api";
+import { getDoctors, getDoctorStats } from "@/lib/api";
 
 const PAGE_SIZE = 4;
 
 const initialFilters: DoctorFilterState = {
   search: "",
+  location: "",
   specialization: "All Specializations",
   experience: "All Experience",
   availability: "Any Day",
   maxFee: 2000,
 };
 
-// ---------------------------------------------------------------------
-// FIX: previously the applied filters and sort were never turned into
-// query params, and the fetch effect only re-ran on page change — so
-// "Apply Filters" updated local state but never asked the backend for
-// anything different.
-// ---------------------------------------------------------------------
-
-/**
- * Backend only supports a MINIMUM experience threshold (`experience_years >= X`),
- * not a capped range. "0-5 Years" therefore can't be filtered precisely
- * server-side yet (no upper bound param) — it's treated as "no filter".
- * If exact range filtering is needed, the backend scope needs a max param too.
- */
+// Map experience dropdown ranges to a minimum threshold for API query
 function experienceRangeToMinYears(range: string): number | null {
   switch (range) {
     case "5-10 Years":
@@ -47,12 +36,7 @@ function experienceRangeToMinYears(range: string): number | null {
   }
 }
 
-/**
- * Backend `sorted()` scope only sorts fee ASCENDING (Fee: Low to High).
- * There is currently no descending-fee option server-side, so
- * "Fee: High to Low" falls back to the same ascending sort for now.
- * (Flag this to the backend if true high-to-low fee sort is needed.)
- */
+// Map frontend sort dropdown values to API sort parameters
 function sortOptionToBackendSort(sort: SortOption): string | null {
   switch (sort) {
     case "Rating: High to Low":
@@ -63,10 +47,11 @@ function sortOptionToBackendSort(sort: SortOption): string | null {
     case "Experience: High to Low":
       return "experience";
     default:
-      return null; // "Relevance" -> let backend use its own default order
+      return null;
   }
 }
 
+// Construct query parameters for the doctors endpoint
 function buildQueryParams(
   filters: DoctorFilterState,
   sort: SortOption,
@@ -82,6 +67,10 @@ function buildQueryParams(
     params.set("search", filters.search.trim());
   }
 
+  if (filters.location.trim()) {
+    params.set("location", filters.location.trim());
+  }
+
   if (filters.specialization !== "All Specializations") {
     params.set("specialization", filters.specialization);
   }
@@ -90,7 +79,6 @@ function buildQueryParams(
     params.set("availability", filters.availability);
   }
 
-  // 2000 represents the "₹2000+" (no cap) end of the slider
   if (filters.maxFee < 2000) {
     params.set("fee", String(filters.maxFee));
   }
@@ -118,6 +106,26 @@ export default function DoctorListingPage() {
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Dynamic doctor platform stats state inside component
+  const [stats, setStats] = useState({
+    doctors: 10000,
+    specialties: 25,
+    patients: 100000,
+    rating: 4.8,
+  });
+
+  // Fetch dynamic stats on component mount
+  useEffect(() => {
+    async function loadStats() {
+      const data = await getDoctorStats();
+      if (data) {
+        setStats(data);
+      }
+    }
+    loadStats();
+  }, []);
+
   const totalPages = Math.max(1, Math.ceil(totalDoctors / PAGE_SIZE));
 
   const handleApplyFilters = () => {
@@ -131,15 +139,12 @@ export default function DoctorListingPage() {
     setCurrentPage(1);
   };
 
-  // Resetting to page 1 whenever sort changes, since the result order shifts
   const handleSortChange = (newSort: SortOption) => {
     setSort(newSort);
     setCurrentPage(1);
   };
 
-  // Load doctors from backend
-  // FIX: now depends on appliedFilters + sort (not just currentPage), and
-  // builds real query params so the backend actually filters/sorts.
+  // Fetch doctors list whenever applied filters, sort option, or pagination changes
   useEffect(() => {
     async function fetchDoctors() {
       try {
@@ -170,7 +175,7 @@ export default function DoctorListingPage() {
 
       <main>
         <DoctorHero />
-        <DoctorStats />
+        <DoctorStats stats={stats} />
 
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">

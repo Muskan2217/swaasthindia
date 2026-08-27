@@ -39,7 +39,7 @@ export default function UpcomingAppointmentsTable() {
       ) : appointments.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-6">No upcoming appointments.</p>
       ) : (
-        <div className="space-y-1">
+        <div className="max-h-[350px] overflow-y-auto pr-1 space-y-1">
           {appointments.map((appt) => (
             <div
               key={appt.id}

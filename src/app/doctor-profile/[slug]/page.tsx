@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import DoctorProfileView from "@/components/doctor-profile/DoctorProfileView";
-import AppointmentBooking from "@/components/doctor-profile/AppointmentBooking";
+import BookingGate from "@/components/doctor-profile/BookingGate";
 import { getDoctorBySlug, DoctorNotFoundError } from "@/lib/api";
 
 interface DoctorProfilePageProps {
@@ -45,10 +45,12 @@ export default async function DoctorProfilePage({
   return (
     <div className="space-y-6">
       <DoctorProfileView doctor={doctor} />
-      <AppointmentBooking
-        doctorSlug={doctor.slug}
-        consultationFee={doctor.consultationFee}
-      />
+      <BookingGate
+  doctorSlug={doctor.slug}
+  consultationFee={doctor.consultationFee}
+  availability={doctor.availability}
+  nextSlot={doctor.nextSlot}
+/>
     </div>
   );
 }

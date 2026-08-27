@@ -195,14 +195,14 @@ const handleSubmit = async (e: React.FormEvent) => {
           <span className="text-sm text-gray-600 font-medium leading-relaxed">
             I accept the{" "}
             <Link
-              href="/terms"
+              href="/terms-and-conditions"
               className="text-[#3864D5] font-semibold hover:underline"
             >
               Terms & Conditions
             </Link>{" "}
             and{" "}
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="text-[#3864D5] font-semibold hover:underline"
             >
               Privacy Policy

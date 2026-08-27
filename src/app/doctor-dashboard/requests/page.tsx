@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Phone, Mail, User, Check, X } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Phone, Mail, User, Check, X, RotateCcw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -14,10 +14,15 @@ import {
   type PendingAppointmentData,
 } from "@/lib/api";
 
+// Extended interface to track local UI status (pending | approved | declined)
+interface UIAppointmentRequest extends PendingAppointmentData {
+  status?: "pending" | "declined";
+}
+
 export default function AppointmentRequestsPage() {
   const router = useRouter();
   const { user, token } = useAuth();
-  const [requests, setRequests] = useState<PendingAppointmentData[]>([]);
+  const [requests, setRequests] = useState<UIAppointmentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
 
@@ -34,7 +39,11 @@ export default function AppointmentRequestsPage() {
   const load = useCallback(() => {
     if (!token) return;
     getPendingAppointments(token)
-      .then(setRequests)
+      .then((data) => {
+        // Default status for fetched requests is 'pending'
+        const formattedData = data.map((item) => ({ ...item, status: "pending" as const }));
+        setRequests(formattedData);
+      })
       .catch(() => setRequests([]))
       .finally(() => setLoading(false));
   }, [token]);
@@ -62,9 +71,28 @@ export default function AppointmentRequestsPage() {
     setActingId(id);
     try {
       await declineAppointment(token, id);
-      setRequests((prev) => prev.filter((r) => r.id !== id));
+      // Mark as declined locally to show Undo option
+      setRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "declined" } : r))
+      );
     } catch (err) {
       console.error("Failed to decline:", err);
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const handleUndo = async (id: string) => {
+    if (!token) return;
+    setActingId(id);
+    try {
+      // Re-approve or Restore request logic
+      // Status ko wapas 'pending' me switch karenge
+      setRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "pending" } : r))
+      );
+    } catch (err) {
+      console.error("Failed to undo decline:", err);
     } finally {
       setActingId(null);
     }
@@ -98,7 +126,12 @@ export default function AppointmentRequestsPage() {
         ) : (
           <div className="space-y-3">
             {requests.map((req) => (
-              <div key={req.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div
+                key={req.id}
+                className={`bg-white rounded-2xl border shadow-sm p-5 transition-all ${
+                  req.status === "declined" ? "border-red-200 bg-red-50/30 opacity-90" : "border-gray-100"
+                }`}
+              >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3">
                     <span className="w-11 h-11 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-bold shrink-0">
@@ -112,9 +145,17 @@ export default function AppointmentRequestsPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full shrink-0">
-                    Pending
-                  </span>
+
+                  {/* Status Badges */}
+                  {req.status === "declined" ? (
+                    <span className="text-xs font-semibold text-red-600 bg-red-100 px-2.5 py-1 rounded-full shrink-0">
+                      Declined / Cancelled
+                    </span>
+                  ) : (
+                    <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full shrink-0">
+                      Pending
+                    </span>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600 mb-3 bg-gray-50 rounded-xl p-3">
@@ -131,24 +172,36 @@ export default function AppointmentRequestsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2">
+                {/* Conditional Action Buttons */}
+                {req.status === "declined" ? (
                   <button
                     type="button"
-                    onClick={() => handleApprove(req.id)}
+                    onClick={() => handleUndo(req.id)}
                     disabled={actingId === req.id}
-                    className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-1.5 text-sm font-semibold bg-gray-800 text-white px-4 py-2.5 rounded-lg hover:bg-gray-900 transition-colors disabled:opacity-50"
                   >
-                    <Check className="w-4 h-4" /> Approve
+                    <RotateCcw className="w-4 h-4" /> Undo Decline (Restore)
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDecline(req.id)}
-                    disabled={actingId === req.id}
-                    className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold bg-red-50 text-red-600 px-4 py-2.5 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
-                  >
-                    <X className="w-4 h-4" /> Decline
-                  </button>
-                </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleApprove(req.id)}
+                      disabled={actingId === req.id}
+                      className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                      <Check className="w-4 h-4" /> Approve
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDecline(req.id)}
+                      disabled={actingId === req.id}
+                      className="flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold bg-red-50 text-red-600 px-4 py-2.5 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+                    >
+                      <X className="w-4 h-4" /> Decline
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

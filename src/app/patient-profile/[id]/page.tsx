@@ -9,6 +9,18 @@ import {
   updatePatientProfile,
 } from "@/lib/api";
 
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || "";
+const BACKEND_URL = rawUrl.replace("/api", "");
+
+function resolveImageUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (path.startsWith("blob:")) return path; // local file preview before upload
+  return `${BACKEND_URL}/storage/${path}`;
+}
+
+
+
 type Patient = {
   id: number;
   name: string;
@@ -139,7 +151,7 @@ export default function PatientProfilePage() {
       });
 
       // Restore saved profile image after refresh/navigation
-      setImagePreview(data.profile_image ?? null);
+      setImagePreview(resolveImageUrl(data.profile_image));
     } catch (error) {
       console.error("Failed to load patient profile:", error);
       setPatient(null);
@@ -222,7 +234,7 @@ export default function PatientProfilePage() {
       pincode: patient.pincode ?? "",
     });
 
-    setImagePreview(patient.profile_image ?? null);
+    setImagePreview(resolveImageUrl(patient.profile_image));
     setSelectedImage(null);
     setEditing(false);
   }
@@ -271,7 +283,7 @@ export default function PatientProfilePage() {
       const updated = await updatePatientProfile(token, {
         name: form.name,
         mobile: form.mobile,
-
+        // email: form.email,
         age: form.age === "" ? null : Number(form.age),
         gender: form.gender || null,
 
@@ -514,7 +526,7 @@ export default function PatientProfilePage() {
 
                   <div className="relative">
 
-                    <div className="h-40 w-40 overflow-hidden rounded-full bg-gradient-to-br from-red-50 to-blue-50 ring-8 ring-slate-50">
+                    <div className="h-40 w-40 overflow-hidden rounded-full bg-linear-to-br from-red-50 to-blue-50 ring-8 ring-slate-50">
 
                       {imagePreview ? (
                         <img

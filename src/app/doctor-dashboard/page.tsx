@@ -166,14 +166,15 @@ export default function DoctorDashboardPage() {
           </div>
         </div>
 
-        {/* Weekly Schedule */}
-        <WeeklyScheduleSection />
-
+      
         {/* Appointments + Recent Patients */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <UpcomingAppointmentsTable />
           <RecentPatientsTable />
         </div>
+          {/* Weekly Schedule */}
+        <WeeklyScheduleSection />
+
       </main>
       <Footer />
     </div>

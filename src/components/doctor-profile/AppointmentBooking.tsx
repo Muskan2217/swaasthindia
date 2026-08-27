@@ -283,6 +283,7 @@ function BookingFormModal({
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
+  const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
@@ -304,6 +305,7 @@ function BookingFormModal({
           patientEmail: email,
           patientAge: Number(age),
           patientGender: gender as "Male" | "Female" | "Other",
+          location,
           appointmentDate: date.key,
           appointmentTime: time,
           notes,
@@ -453,6 +455,26 @@ function BookingFormModal({
                     </p>
                   )}
                 </div>
+              </div>
+
+              {/* Mandatory Location Input */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Location / Address
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. City, Area or Address"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+                {fieldErrors.location && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {fieldErrors.location[0]}
+                  </p>
+                )}
               </div>
 
               <div>
