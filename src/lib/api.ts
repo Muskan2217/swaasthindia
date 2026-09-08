@@ -221,6 +221,7 @@ export interface CreateAppointmentPayload {
   appointmentDate: string;
   appointmentTime: string;
   notes?: string;
+  status?: string;
 }
 
 export interface AppointmentResult {
@@ -709,9 +710,17 @@ export interface QueuePatientData {
   id: string;
   name: string;
   reason: string;
-  status: "in-room" | "waiting";
+  status: "in-room" | "waiting" | "time-reached" | "completed";
   statusLabel: string;
   avatarUrl: string | null;
+
+  queueNumber?: number | null;
+  expectedConsultationDurationSeconds?: number;
+  additionalTimeSeconds?: number;
+  remainingConsultationSeconds?: number;
+  consultationStartedAt?: string | null;
+  consultationPausedAt?: string | null;
+  isInRoom?: boolean;
 }
 
 export interface CurrentPatientData {
@@ -768,6 +777,43 @@ export async function completeConsultation(token: string, appointmentId: string)
   if (!res.ok) throw json;
 }
 
+
+
+
+// Pause the ongoing consultation timer
+export async function pauseConsultation(token: string, appointmentId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue/${appointmentId}/pause`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+// Add extra time to the active consultation timer (defaults to 300 seconds / 5 minutes)
+export async function addConsultationTime(token: string, appointmentId: string, additionalSeconds: number = 300): Promise<void> {
+  const res = await fetch(`${API_URL}/doctor/dashboard/queue/${appointmentId}/add-time`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, 
+      Accept: "application/json" 
+    },
+    body: JSON.stringify({ additional_seconds: additionalSeconds }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+}
+
+
+
+
+
+
+
+
+
+
 export async function updateVitals(
   token: string,
   appointmentId: string,
@@ -800,6 +846,7 @@ export interface PendingAppointmentData {
   date: string;
   time: string;
   notes: string | null;
+  location?: string | null;
 }
 
 export async function getPendingAppointments(token: string): Promise<PendingAppointmentData[]> {
@@ -965,12 +1012,46 @@ export async function createAppointmentByDoctor(
 
 export interface LiveQueueStatus {
   has_live_queue: boolean;
+
   doctor_name?: string;
+
   your_token?: number;
+
   current_serving_token?: number;
+
+  current_patient_name?: string | null;
+
   patients_ahead?: number;
-  estimated_wait_minutes?: number;
+
+  queue_status?:
+    | "WAITING"
+    | "NEXT"
+    | "IN_ROOM"
+    | "TIME_REACHED"
+    | "COMPLETED";
+
+  doctor_status?:
+    | "WAITING"
+    | "IN_CONSULTATION"
+    | "TIME_REACHED";
+
   is_your_turn?: boolean;
+
+  remaining_consultation_seconds?: number;
+
+  estimated_wait_seconds?: number;
+
+  estimated_wait_minutes?: number;
+
+  expected_consultation_duration_seconds?: number;
+
+  additional_time_seconds?: number;
+
+  consultation_started_at?: string | null;
+
+  consultation_paused_at?: string | null;
+
+  server_timestamp?: string;
 }
 
 export async function getLiveQueueStatus(token: string): Promise<LiveQueueStatus> {

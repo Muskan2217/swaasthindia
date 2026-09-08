@@ -9,6 +9,7 @@ import {
   Building2,
 } from "lucide-react";
 import type { DoctorProfileData } from "@/lib/api";
+import { getProfileImage } from "../../lib/utils";
 
 interface DoctorProfileViewProps {
   doctor: DoctorProfileData;
@@ -27,11 +28,12 @@ export default function DoctorProfileView({ doctor }: DoctorProfileViewProps) {
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={doctor.profileImage ?? "https://i.pravatar.cc/300"}
-            alt={doctor.name}
-            className="h-24 w-24 shrink-0 rounded-2xl object-cover ring-1 ring-slate-100"
-          />
+ <img
+  src={getProfileImage(doctor.profileImage)}
+  alt={doctor.name}
+  className="h-24 w-24 shrink-0 rounded-2xl object-cover ring-1 ring-slate-100"
+/>
+         
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">

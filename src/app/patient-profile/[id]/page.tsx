@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -361,99 +360,27 @@ export default function PatientProfilePage() {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
 
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 border-r border-slate-200 bg-white lg:block">
-
-        <div className="flex h-full flex-col">
-
-          {/* Logo */}
-          <div className="flex h-24 items-center border-b border-slate-100 px-6">
-            <div>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
-                  ♥
-                </div>
-
-                <span className="text-xl font-extrabold">
-                  <span className="text-red-600">Swaasth</span>{" "}
-                  <span className="text-blue-700">India</span>
-                </span>
-              </div>
-
-              <div className="ml-12 mt-1 inline-block rounded-full bg-red-50 px-3 py-1 text-[10px] font-bold text-red-600">
-                Patient Portal
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 space-y-1 px-3 py-6">
-
-            <SidebarLink
-              href="/patient-dashboard"
-              icon="⌂"
-              label="Dashboard"
-            />
-
-            <SidebarLink
-              href="/patient-dashboard"
-              icon="▣"
-              label="My Appointments"
-            />
-
-            <SidebarLink
-              href="/doctor-listing"
-              icon="▦"
-              label="Book Appointment"
-            />
-
-            <SidebarLink
-              href="/patient-dashboard"
-              icon="▤"
-              label="Prescriptions"
-            />
-
-            <SidebarLink
-              href="/patient-dashboard"
-              icon="▥"
-              label="Reports"
-            />
-
-            <div className="pt-3">
-              <div className="flex items-center gap-3 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-red-100">
-                <span>♙</span>
-                <span>My Profile</span>
-              </div>
-            </div>
-
-
-          </nav>
-
-          <div className="border-t border-slate-100 p-3">
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <span>↪</span>
-              Logout
-            </button>
-          </div>
-
-        </div>
-      </aside>
-
-
       {/* Main */}
-      <main className="lg:pl-64">
+      <main>
 
         {/* Top Header */}
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <header className="border-b border-slate-200 bg-white">
 
-          <div className="flex min-h-20 items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between px-4 py-3 sm:px-6">
 
             <div>
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => router.push("/patient-dashboard")}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  ← Back to Dashboard
+                </button>
+              </div>
+
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
                   Hey, {patient.name}   Welcome
                 </h1>
 
@@ -464,7 +391,7 @@ export default function PatientProfilePage() {
                 )}
               </div>
 
-               <p className="mt-1 text-sm text-slate-500">
+               <p className="mt-0.5 text-xs text-slate-500">
                 Manage your personal information and health details
               </p> 
 
@@ -472,7 +399,7 @@ export default function PatientProfilePage() {
   <button
     type="button"
     onClick={startEditing}
-    className="mt-4 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
+    className="mt-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
   >
     Edit Profile
   </button>
@@ -513,104 +440,91 @@ export default function PatientProfilePage() {
         </header>
 
 
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
 
           <form onSubmit={handleSave}>
 
-            <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="space-y-4">
 
               {/* Profile Card */}
-              <section className="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative shrink-0">
+                      <div className="h-20 w-20 overflow-hidden rounded-full bg-linear-to-br from-red-50 to-blue-50 ring-4 ring-slate-50">
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview}
+                            alt={patient.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-700">
+                            {patient.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
 
-                <div className="flex flex-col items-center">
-
-                  <div className="relative">
-
-                    <div className="h-40 w-40 overflow-hidden rounded-full bg-linear-to-br from-red-50 to-blue-50 ring-8 ring-slate-50">
-
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt={patient.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-blue-700">
-                          {patient.name.charAt(0)}
-                        </div>
+                      {editing && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={handleImageClick}
+                            className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-600 text-sm text-white shadow hover:bg-blue-700"
+                            title="Change profile photo"
+                          >
+                            📷
+                          </button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                          />
+                        </>
                       )}
-
                     </div>
 
-                    {editing && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleImageClick}
-                          className="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-blue-600 text-lg text-white shadow-lg hover:bg-blue-700"
-                          title="Change profile photo"
-                        >
-                          📷
-                        </button>
-
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                      </>
-                    )}
-
+                    <div>
+                      <h2 className="text-lg font-extrabold text-slate-900">
+                        {patient.name}
+                      </h2>
+                      <span className="mt-1 inline-block rounded-full bg-red-50 px-3 py-0.5 text-xs font-bold text-red-600">
+                        {patient.patient_code}
+                      </span>
+                    </div>
                   </div>
 
-                  <h2 className="mt-5 text-xl font-extrabold text-slate-900">
-                    {patient.name}
-                  </h2>
-
-                  <span className="mt-2 rounded-full bg-red-50 px-4 py-1 text-xs font-bold text-red-600">
-                    {patient.patient_code}
-                  </span>
-
-                </div>
-
-
-                <div className="mt-6 rounded-2xl bg-blue-50 p-4">
-
-                  <MiniContact
-                    icon="☎"
-                    value={patient.mobile || "Not added"}
-                  />
-
-                  <MiniContact
-                    icon="✉"
-                    value={patient.email || "Not added"}
-                  />
-
-                  <MiniContact
-                    icon="▣"
-                    value={
-                      patient.created_at
-                        ? new Date(patient.created_at).toLocaleDateString()
-                        : "—"
-                    }
-                  />
-
+                  <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-3">
+                    <MiniContact
+                      icon="☎"
+                      value={patient.mobile || "Not added"}
+                    />
+                    <MiniContact
+                      icon="✉"
+                      value={patient.email || "Not added"}
+                    />
+                    <MiniContact
+                      icon="▣"
+                      value={
+                        patient.created_at
+                          ? new Date(patient.created_at).toLocaleDateString()
+                          : "—"
+                      }
+                    />
+                  </div>
                 </div>
 
                 {editing && (
-                  <p className="mt-4 text-center text-xs leading-5 text-slate-400">
-                    Click the camera button to choose a profile photo.
-                    Maximum recommended size: 5MB.
+                  <p className="mt-2 text-xs text-slate-400">
+                    Click the camera button to choose a profile photo. Maximum recommended size: 5MB.
                   </p>
                 )}
-
               </section>
 
-
               {/* Profile Information */}
-              <div className="space-y-6">
+              <div className="space-y-4">
 
                 {/* Personal */}
                 <ProfileCard
@@ -618,7 +532,7 @@ export default function PatientProfilePage() {
                   accent="blue"
                 >
 
-                  <div className="grid gap-5 md:grid-cols-3">
+                  <div className="grid gap-3 md:grid-cols-3">
 
                     <Field
                       label="Full Name"
@@ -679,7 +593,7 @@ export default function PatientProfilePage() {
                   accent="red"
                 >
 
-                  <div className="grid gap-5 md:grid-cols-3">
+                  <div className="grid gap-3 md:grid-cols-3">
 
                     <SelectField
                       label="Blood Group"
@@ -760,7 +674,7 @@ export default function PatientProfilePage() {
                   accent="blue"
                 >
 
-                  <div className="grid gap-5 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-2">
 
                     <Field
                       label="Contact Name"
@@ -789,7 +703,7 @@ export default function PatientProfilePage() {
                   accent="red"
                 >
 
-                  <div className="grid gap-5 md:grid-cols-3">
+                  <div className="grid gap-3 md:grid-cols-3">
 
                     <div className="md:col-span-3">
                       <Field
@@ -833,12 +747,12 @@ export default function PatientProfilePage() {
 
                 {/* Bottom actions */}
                 {editing && (
-                  <div className="flex justify-end gap-3 pb-8">
+                  <div className="flex justify-end gap-2 pb-4">
 
                     <button
                       type="button"
                       onClick={cancelEditing}
-                      className="rounded-xl border border-red-300 bg-white px-6 py-3 font-semibold text-red-600 hover:bg-red-50"
+                      className="rounded-lg border border-red-300 bg-white px-5 py-2.5 font-semibold text-red-600 hover:bg-red-50"
                     >
                       Cancel
                     </button>
@@ -846,7 +760,7 @@ export default function PatientProfilePage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="rounded-xl bg-red-600 px-7 py-3 font-bold text-white shadow-sm hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-lg bg-red-600 px-6 py-2.5 font-bold text-white shadow-sm hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {saving ? "Saving..." : "Save Changes"}
                     </button>
@@ -871,27 +785,6 @@ export default function PatientProfilePage() {
 /* -------------------------------------------------------
    Reusable UI components
 ------------------------------------------------------- */
-
-function SidebarLink({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: string;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
-    >
-      <span className="w-5 text-center text-base">{icon}</span>
-      <span>{label}</span>
-    </Link>
-  );
-}
-
 
 function MiniContact({
   icon,
@@ -919,12 +812,12 @@ function ProfileCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
 
-      <div className="mb-5 flex items-center gap-3 border-b border-slate-100 pb-4">
+      <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2">
 
         <div
-          className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+          className={`flex h-8 w-8 items-center justify-center rounded-lg ${
             accent === "blue"
               ? "bg-blue-50 text-blue-700"
               : "bg-red-50 text-red-600"
@@ -934,7 +827,7 @@ function ProfileCard({
         </div>
 
         <h2
-          className={`text-lg font-bold ${
+          className={`text-base font-bold ${
             accent === "blue"
               ? "text-blue-700"
               : "text-red-600"
@@ -975,7 +868,7 @@ function Field({
   return (
     <div>
 
-      <label className="mb-1.5 block text-xs font-bold text-slate-600">
+      <label className="mb-1 block text-xs font-bold text-slate-600">
         {label}
       </label>
 
@@ -986,7 +879,7 @@ function Field({
             value={value}
             onChange={onChange}
             rows={3}
-            className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
+            className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
           />
         ) : (
           <input
@@ -994,11 +887,11 @@ function Field({
             type={type}
             value={value}
             onChange={onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
+            className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
           />
         )
       ) : (
-        <div className="min-h-[42px] rounded-xl bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700">
+        <div className="min-h-[38px] rounded-lg bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700">
           {value || "—"}
         </div>
       )}
@@ -1030,7 +923,7 @@ function SelectField({
   return (
     <div>
 
-      <label className="mb-1.5 block text-xs font-bold text-slate-600">
+      <label className="mb-1 block text-xs font-bold text-slate-600">
         {label}
       </label>
 
@@ -1039,7 +932,7 @@ function SelectField({
           name={name}
           value={value}
           onChange={onChange}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
+          className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-50"
         >
           {options.map(([optionValue, optionLabel]) => (
             <option key={optionValue} value={optionValue}>
@@ -1048,7 +941,7 @@ function SelectField({
           ))}
         </select>
       ) : (
-        <div className="min-h-[42px] rounded-xl bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700">
+        <div className="min-h-[38px] rounded-lg bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700">
           {value || "—"}
         </div>
       )}

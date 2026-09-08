@@ -338,6 +338,12 @@ function DoctorAppointments({ token }: { token: string }) {
                   {appt.age ? `${appt.age} Yr` : "—"}
                   {appt.gender ? ` • ${appt.gender}` : ""} • {appt.phone}
                 </p>
+
+                {appt.location && (
+  <p className="text-xs text-gray-500 truncate flex items-center gap-1 mt-0.5">
+    <span className="font-medium text-gray-600">Location:</span> {appt.location}
+  </p>
+)}
               </div>
               <div className="hidden sm:flex flex-col items-end text-xs text-gray-500 shrink-0">
                 <span className="flex items-center gap-1">

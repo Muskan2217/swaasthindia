@@ -8,7 +8,7 @@ import {
   declineAppointment,
 } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { Check, X, Clock } from "lucide-react";
+import { Check, X, Clock, MapPin } from "lucide-react";
 
 export default function PendingApprovalsSection() {
   const { token } = useAuth();
@@ -98,6 +98,21 @@ export default function PendingApprovalsSection() {
               </p>
               
               <p className="text-xs text-slate-500">{appt.phone}</p>
+
+              <p className="text-xs text-slate-500">{appt.phone}</p>
+
+              {appt.location && (
+                <p className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span className="truncate">{appt.location}</span>
+                </p>
+              )}
+
+              {appt.notes && (
+                <p className="text-xs text-slate-600 italic bg-white/80 p-1.5 rounded border border-slate-100 mt-1 line-clamp-2">
+                  "{appt.notes}"
+                </p>
+              )}
 
               {appt.notes && (
                 <p className="text-xs text-slate-600 italic bg-white/80 p-1.5 rounded border border-slate-100 mt-1 line-clamp-2">

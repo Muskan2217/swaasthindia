@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Phone, Mail, User, Check, X, RotateCcw } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Phone, Mail, User, Check, X, RotateCcw, MapPin } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -17,6 +17,7 @@ import {
 // Extended interface to track local UI status (pending | approved | declined)
 interface UIAppointmentRequest extends PendingAppointmentData {
   status?: "pending" | "declined";
+  location?: string | null;
 }
 
 export default function AppointmentRequestsPage() {
@@ -163,6 +164,9 @@ export default function AppointmentRequestsPage() {
                   <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-gray-400" />{req.email || "Not provided"}</span>
                   <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-gray-400" />{req.date}</span>
                   <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-gray-400" />{req.time}</span>
+                  {req.location && (
+                    <span className="flex items-center gap-1.5 sm:col-span-2"><MapPin className="w-3.5 h-3.5 text-gray-400" />{req.location}</span>
+                  )}
                 </div>
 
                 {req.notes && (

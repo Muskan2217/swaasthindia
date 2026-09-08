@@ -13,6 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  isLoading: boolean; // <-- Naya state add kiya
   login: (token: string, user: User) => void;
   logout: () => void;
 }
@@ -20,6 +21,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
+  isLoading: true,
   login: () => {},
   logout: () => {},
 });
@@ -31,21 +33,27 @@ export function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // <-- Loading state
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    try {
+      const savedToken = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      if (savedToken && savedUser) {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse auth from localStorage", error);
+    } finally {
+      setIsLoading(false); // <-- Data load hone ke baad loading false ho jayegi
     }
   }, []);
 
   const login = (token: string, user: User) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-
     setToken(token);
     setUser(user);
   };
@@ -53,7 +61,6 @@ export function AuthProvider({
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
     setToken(null);
     setUser(null);
   };
@@ -63,6 +70,7 @@ export function AuthProvider({
       value={{
         user,
         token,
+        isLoading,
         login,
         logout,
       }}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getMyDoctorProfile, type MyDoctorProfile } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-
+import { getProfileImage } from "@/lib/utils";
 import Navbar from "@/components/layout/Navbar";
 import Link from "next/link";
 import { Settings, UserPlus, ClipboardList } from "lucide-react";
@@ -82,11 +82,11 @@ export default function DoctorDashboardPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={profile?.profileImage ?? "https://i.pravatar.cc/300"}
-              alt={profile?.name ?? "Doctor"}
-              className="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-sm"
-            />
+           <img
+  src={getProfileImage(profile?.profileImage)}
+  alt={profile?.name ?? "Doctor"}
+  className="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+/>
             <div>
               <h1 className="text-lg font-semibold text-[#0D1B3E] sm:text-xl">
                 Welcome, Dr. {profile?.name ?? user?.name ?? ""}

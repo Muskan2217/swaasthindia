@@ -64,10 +64,11 @@ export default function Navbar() {
           { href: "/doctor-dashboard", label: "Dashboard" },
         ]
       : [
-          { href: "/", label: "Home" },
+          // { href: "/", label: "Home" },
           { href: "/doctor-listing", label: "Doctors" },
           { href: "/lab-tests", label: "Lab Tests" },
           { href: "/appointments", label: "Appointments" },
+           { href: "/patient-dashboard", label: "Dashboard" },
         ]
     : [
         { href: "/", label: "Home" },
@@ -104,9 +105,10 @@ export default function Navbar() {
           { href: getProfileHref(), label: "My Profile" },
         ]
     : [
-        { href: "/", label: "Home" },
+        // { href: "/", label: "Home" },
         { href: "/doctor-listing", label: "Doctors" },
         { href: "/lab-tests", label: "Lab Tests" },
+         { href: "/patient-dashboard", label: "Dashboard" },
         { href: "/login", label: "Login / Sign up" },
       ];
 
