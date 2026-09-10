@@ -52,7 +52,7 @@ export const HELP_LINKS: FooterLink[] = [
 ];
 
 export const COMPANY_LINKS: CompanyInfo[] = [
-  { id: "founder", label: "About Founder", href: "/about" },
+  { id: "founder", label: "About Us", href: "/about" },
   { id: "doctor", label: "Verified Doctor", href: "/doctors" },
   { id: "careers", label: "Careers", href: "/careers" },
   { id: "certificate", label: "Certificate", href: "/certificate" },
