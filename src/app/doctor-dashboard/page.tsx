@@ -19,7 +19,7 @@ import RecentPatientsTable from "@/components/doctor-dashboard/RecentPatientsTab
 
 export default function DoctorDashboardPage() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
 
   const [profile, setProfile] = useState<MyDoctorProfile | null>(null);
   const [pendingCount, setPendingCount] = useState<number>(0);
@@ -64,15 +64,17 @@ export default function DoctorDashboardPage() {
   }, [token]);
 
   useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
+  if (authLoading) return;
 
-    if (user.role !== "doctor") {
-      router.replace("/patient-dashboard");
-    }
-  }, [user, router]);
+  if (!user) {
+    router.replace("/login");
+    return;
+  }
+
+  if (user.role !== "doctor") {
+    router.replace("/patient-dashboard");
+  }
+}, [user, authLoading, router]);
 
   return (
     <div className="min-h-screen bg-[#F7F8FC]">

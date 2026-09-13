@@ -151,7 +151,7 @@ function AppointmentRow({ appt }: { appt: AppointmentHistoryItem }) {
 
 export default function PatientDashboard() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
 
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [stats, setStats] = useState<PatientStats | null>(null);
@@ -162,15 +162,18 @@ export default function PatientDashboard() {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
   const [currentApptIndex, setCurrentApptIndex] = useState(0);
 
-  useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
-    if (user.role !== "patient") {
-      router.replace("/doctor-dashboard");
-    }
-  }, [user, router]);
+useEffect(() => {
+  if (authLoading) return;
+
+  if (!user) {
+    router.replace("/login");
+    return;
+  }
+
+  if (user.role !== "patient") {
+    router.replace("/doctor-dashboard");
+  }
+}, [user, authLoading, router]);
 
   useEffect(() => {
     if (!token) return;

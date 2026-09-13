@@ -167,7 +167,7 @@ export default function LiveQueueCard() {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [estimatedWaitSeconds, setEstimatedWaitSeconds] = useState(0);
 
-  useEffect(() => {
+useEffect(() => {
     if (!token) return;
 
     let cancelled = false;
@@ -178,13 +178,17 @@ export default function LiveQueueCard() {
 
         if (cancelled) return;
 
-        setQueue(data);
-        setRemainingSeconds(
-          Math.max(0, data.remaining_consultation_seconds ?? 0),
-        );
-        setEstimatedWaitSeconds(
-          Math.max(0, data.estimated_wait_seconds ?? 0),
-        );
+        setQueue((prevQueue) => {
+          // Server se jo exact remaining seconds aaye hain, unhe direct set karein
+          if (data.remaining_consultation_seconds !== undefined) {
+            setRemainingSeconds(Math.max(0, data.remaining_consultation_seconds));
+          }
+          if (data.estimated_wait_seconds !== undefined) {
+            setEstimatedWaitSeconds(Math.max(0, data.estimated_wait_seconds));
+          }
+
+          return data;
+        });
       } catch {
         if (!cancelled) {
           setQueue({ has_live_queue: false });
@@ -203,6 +207,7 @@ export default function LiveQueueCard() {
       clearInterval(interval);
     };
   }, [token]);
+
 
   useEffect(() => {
     const timer = setInterval(() => {
